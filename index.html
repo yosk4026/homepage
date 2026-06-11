@@ -1265,39 +1265,7 @@
         </div>
       </div>
       <div class="contact-form-wrap">
-        <form action="contact.php" method="POST">
-        <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
-        <div class="form-row">
-          <label class="form-label">お名前<span class="form-required">*</span></label>
-          <input type="text" class="form-input" placeholder="例）山田 太郎" name="name" required>
-        </div>
-        <div class="form-row">
-          <label class="form-label">メールアドレス<span class="form-required">*</span></label>
-          <input type="email" class="form-input" placeholder="例）sample@example.com" name="email" required>
-        </div>
-        <div class="form-row">
-          <label class="form-label">お電話番号</label>
-          <input type="tel" class="form-input" placeholder="例）090-0000-0000" name="tel">
-        </div>
-        <div class="form-row">
-          <label class="form-label">ご相談内容<span class="form-required">*</span></label>
-          <select class="form-select" name="subject" required>
-            <option value="">選択してください</option>
-            <option>遺産相続について</option>
-            <option>在留資格・申請取次について</option>
-            <option>その他</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label class="form-label">お問い合わせ詳細</label>
-          <textarea class="form-textarea" placeholder="ご状況やご質問をご記入ください。（任意）" name="message"></textarea>
-        </div>
-        <button type="submit" class="form-submit">送　信</button>
-        <p class="form-note">
-          ※ ご入力いただいた個人情報は、お問い合わせへの返答のみに使用し、第三者への提供は行いません。<br>
-          ※ 2営業日以内にご連絡いたします。
-        </p>
-        </form>
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfAKnn8DYUFnh8tmZ0yetswQxMJU8CHRkjS6hzGEoDF_lioIA/viewform?embedded=true" width="100%" height="1150" frameborder="0" marginheight="0" marginwidth="0" style="border:none;background:transparent;" title="お問い合わせフォーム">読み込んでいます…</iframe><p class="form-note">※ フォームがうまく表示されない場合は<a href="https://docs.google.com/forms/d/e/1FAIpQLSfAKnn8DYUFnh8tmZ0yetswQxMJU8CHRkjS6hzGEoDF_lioIA/viewform" target="_blank" rel="noopener">こちらのお問い合わせフォーム</a>からお送りください。<br>※ ご入力いただいた個人情報は、お問い合わせへの返答のみに使用し、第三者への提供は行いません。<br>※ 2営業日以内にご連絡いたします。</p>
       </div>
     </div>
   </div>
@@ -1315,7 +1283,7 @@
     item.classList.toggle('open');
   }
 
-  // handleSubmit removed - form now submits to contact.php
+  // お問い合わせはGoogleフォーム埋め込みに変更（2026-06-11・GitHub Pages移行に伴いcontact.php廃止）
 
   // Nav highlight on scroll
   const sections = document.querySelectorAll('section[id]');
