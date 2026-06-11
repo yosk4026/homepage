@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>技人国・高度専門職 簡易診断｜行政書士 吉岡康生事務所</title>
+
+<!-- フォント -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<!-- Tailwind（ブラウザ版） -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- React 18 UMD -->
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+
+<!-- Babel Standalone（JSX変換） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.25.6/babel.min.js"></script>
+
+<style>
+  body { font-family: 'Zen Kaku Gothic New', sans-serif; margin: 0; }
+  .font-mincho { font-family: 'Shippori Mincho', serif; }
+  /* スクロールバー薄め */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useEffect } = React;
+
+/* ========================================================================
+   インラインSVGアイコン（Lucide Reactから移植）
+   ======================================================================== */
+const Icon = ({ d, size = 18, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+       fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+       className={className} dangerouslySetInnerHTML={{ __html: d }} />
+);
+const ChevronDown = (p) => <Icon d='<path d="m6 9 6 6 6-6"/>' {...p} />;
+const ChevronRight = (p) => <Icon d='<path d="m9 18 6-6-6-6"/>' {...p} />;
+const Download = (p) => <Icon d='<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>' {...p} />;
+const FileText = (p) => <Icon d='<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>' {...p} />;
+const AlertCircle = (p) => <Icon d='<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' {...p} />;
+const CheckCircle2 = (p) => <Icon d='<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' {...p} />;
+const XCircle = (p) => <Icon d='<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' {...p} />;
+const Sparkles = (p) => <Icon d='<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>' {...p} />;
+const ScrollText = (p) => <Icon d='<path d="M15 8h-7"/><path d="M15 12h-7"/><path d="M8 16H5a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v3"/><path d="M9 16v3a3 3 0 0 1-6 0v-3z"/><path d="M21 8v9a3 3 0 0 1-3 3H9"/>' {...p} />;
+const Briefcase = (p) => <Icon d='<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>' {...p} />;
+const GraduationCap = (p) => <Icon d='<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' {...p} />;
+const Building2 = (p) => <Icon d='<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h4"/><path d="M18 9h2a2 2 0 0 1 2 2v11h-4"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>' {...p} />;
+const User = (p) => <Icon d='<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' {...p} />;
+const Stamp = (p) => <Icon d='<path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13"/>' {...p} />;
+const Phone = (p) => <Icon d='<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>' {...p} />;
+const Mail = (p) => <Icon d='<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>' {...p} />;
+
+/* ========================================================================
+   要件マトリクス
+   ======================================================================== */
+const REQUIREMENTS = {
+  version: "2026.05",
+  last_updated: "2026-05-08",
+
+  gijinkoku: {
+    name: "技術・人文知識・国際業務",
+    legal_basis: [
+      { law: "出入国管理及び難民認定法", article: "別表第一の二の表",
+        summary: "本邦の公私の機関との契約に基づいて行う理学、工学その他の自然科学の分野若しくは法律学、経済学、社会学その他の人文科学の分野に属する技術若しくは知識を要する業務又は外国の文化に基盤を有する思考若しくは感受性を必要とする業務に従事する活動" },
+      { law: "出入国管理及び難民認定法第七条第一項第二号の基準を定める省令", article: "技術・人文知識・国際業務の項",
+        summary: "学歴・実務経験・報酬・専攻と業務の関連性等を定める" },
+    ],
+    categories: {
+      technical: { label: "技術系（自然科学）", experience_alternative_years: 10, must_match_major: true },
+      humanities: { label: "人文知識系（人文科学）", experience_alternative_years: 10, must_match_major: true },
+      international: { label: "国際業務系", experience_alternative_years: 3, must_match_major: false },
+    },
+    salary_threshold_jpy_monthly: 200000,
+    professional_keywords_positive: [
+      "設計", "開発", "分析", "企画", "管理", "翻訳", "通訳", "指導", "研究", "調査",
+      "プログラミング", "コンサルティング", "マーケティング", "経理", "財務", "法務",
+      "システム", "エンジニアリング", "営業企画", "事業開発", "戦略",
+    ],
+    professional_keywords_negative: [
+      "単純", "ライン作業", "梱包", "仕分け", "清掃", "皿洗い", "レジ打ち",
+      "店頭販売のみ", "工場ライン", "現場作業", "陳列",
+    ],
+    ranks: {
+      A: "全要件を明確に充足。学歴・専攻・業務の関連性が強く、申請可能性が高い",
+      B: "全要件を充足。立証資料での補強を推奨",
+      C: "条件付き可能。1要件が境界事例で説明資料の工夫が必要",
+      D: "困難。必須要件が1つ不充足だが、実務経験等で代替可能性あり",
+      E: "不可。複数要件不充足、または単純労働該当のおそれ",
+    },
+  },
+
+  kodo_senmonshoku_1: {
+    name: "高度専門職1号",
+    legal_basis: [
+      { law: "出入国管理及び難民認定法", article: "別表第一の二の表",
+        summary: "高度の専門的な能力を有する人材として法務省令で定める基準に適合する者が行う活動" },
+      { law: "出入国管理及び難民認定法第七条第一項第二号の基準を定める省令", article: "高度専門職の項",
+        summary: "ポイント計算による70点以上の評価を要件とする" },
+    ],
+    types: {
+      i: { label: "高度学術研究活動（1号イ）", description: "研究、研究の指導又は教育" },
+      ro: { label: "高度専門・技術活動（1号ロ）", description: "自然科学又は人文科学の分野の知識・技術を要する業務" },
+      ha: { label: "高度経営・管理活動（1号ハ）", description: "事業の経営又は管理" },
+    },
+    min_annual_income_jpy: { i: 0, ro: 3000000, ha: 3000000 },
+    education_points: {
+      doctor: { points: 30, label: "博士号（専門職に係る学位を除く）" },
+      master: { points: 20, label: "修士号又は専門職学位" },
+      bachelor: { points: 10, label: "大学卒業（学士）又は同等以上" },
+      bonus_multiple: { points: 5, label: "複数分野で修士以上を複数所持" },
+      bonus_mba_mot: { points: 5, label: "経営・管理関連学位（MBA・MOT等）" },
+    },
+    career_points: {
+      i:  [{years: 10, pts: 20}, {years: 7, pts: 15}, {years: 5, pts: 10}, {years: 3, pts: 5}],
+      ro: [{years: 10, pts: 20}, {years: 7, pts: 15}, {years: 5, pts: 10}, {years: 3, pts: 5}],
+      ha: [{years: 10, pts: 25}, {years: 7, pts: 20}, {years: 5, pts: 15}, {years: 3, pts: 10}],
+    },
+    income_table_iro: [
+      { man: 1000, by_age: { u30: 40, u35: 40, u40: 40, o40: 40 } },
+      { man: 900,  by_age: { u30: 35, u35: 35, u40: 35, o40: 35 } },
+      { man: 800,  by_age: { u30: 30, u35: 30, u40: 30, o40: 30 } },
+      { man: 700,  by_age: { u30: 25, u35: 25, u40: 25, o40: 0  } },
+      { man: 600,  by_age: { u30: 20, u35: 20, u40: 15, o40: 0  } },
+      { man: 500,  by_age: { u30: 15, u35: 15, u40: 10, o40: 0  } },
+      { man: 400,  by_age: { u30: 10, u35: 5,  u40: 0,  o40: 0  } },
+    ],
+    income_table_ha: [
+      { man: 3000, pts: 50 }, { man: 2500, pts: 40 }, { man: 2000, pts: 30 },
+      { man: 1500, pts: 20 }, { man: 1000, pts: 10 },
+    ],
+    age_iro: [{ max: 29, pts: 15 }, { max: 34, pts: 10 }, { max: 39, pts: 5 }],
+    ranks: {
+      A: "80点以上：認定。永住申請に必要な在留期間が1年に短縮（最優遇）",
+      B: "70点以上80点未満：認定（標準）",
+      C: "60点以上70点未満：あと一歩。日本語試験合格、年収アップ等で充足可能",
+      D: "50点以上60点未満：高度専門職としては困難。技人国併願検討",
+      E: "50点未満：高度専門職は不適。技人国判定優先",
+    },
+  },
+
+  j_skip: {
+    name: "特別高度人材制度（J-Skip）",
+    introduced: "2023年4月",
+    legal_basis: [
+      { law: "出入国管理及び難民認定法第七条第一項第二号の基準を定める省令",
+        article: "高度専門職の項（特別高度人材関連）",
+        summary: "学歴・職歴と年収の一定基準を満たす場合に高度専門職を付与し、特別優遇措置を認める" },
+    ],
+    benefits: [
+      "在留期間「5年」が一律で付与",
+      "永住申請に必要な在留期間が1年に短縮",
+      "高度専門職2号への移行が1年で可能",
+      "配偶者の就労範囲が大幅に拡大",
+      "外国人家事使用人を最大2名まで雇用可能",
+      "空港のプライオリティーレーン使用可",
+    ],
+  },
+};
+
+/* ========================================================================
+   判定エンジン
+   ======================================================================== */
+function classifyJobCategory(applicant) {
+  const text = (applicant.jobTitle + " " + applicant.jobDescription + " " + applicant.majorField).toLowerCase();
+  const intl = ["翻訳", "通訳", "語学", "海外取引", "貿易", "広報", "宣伝", "デザイン"];
+  const tech = ["エンジニア", "システム", "プログラム", "設計", "機械", "電気", "土木", "建築", "研究", "開発", "化学", "物理"];
+  if (intl.some(k => text.includes(k))) return "international";
+  if (tech.some(k => text.includes(k))) return "technical";
+  return "humanities";
+}
+
+function majorRelevanceScore(major, jobDesc) {
+  if (!major || !jobDesc) return 0;
+  const pairs = [
+    [["情報", "コンピュータ", "ソフトウェア"], ["システム", "プログラム", "エンジニア", "ソフトウェア", "開発"]],
+    [["経済", "経営", "商", "ビジネス"], ["経理", "財務", "マーケティング", "経営", "企画", "営業"]],
+    [["法学", "法律"], ["法務", "コンプライアンス", "契約"]],
+    [["機械", "電気", "電子"], ["設計", "開発", "技術", "製造"]],
+    [["建築", "土木"], ["設計", "施工", "建築"]],
+    [["文学", "言語", "語学"], ["翻訳", "通訳", "語学指導"]],
+    [["国際関係", "国際"], ["海外", "国際", "貿易", "海外取引"]],
+  ];
+  const m = major.toLowerCase(); const j = jobDesc.toLowerCase();
+  for (const [mks, jks] of pairs) {
+    if (mks.some(k => m.includes(k.toLowerCase())) && jks.some(k => j.includes(k.toLowerCase()))) return 2;
+  }
+  const common = ["管理", "企画", "分析", "研究", "国際", "開発"];
+  for (const t of common) { if (m.includes(t) && j.includes(t)) return 1; }
+  return 0;
+}
+
+function professionalismScore(jobDesc, pos, neg) {
+  if (!jobDesc) return 0;
+  const t = jobDesc.toLowerCase();
+  const hasP = pos.some(k => t.includes(k.toLowerCase()));
+  const hasN = neg.some(k => t.includes(k.toLowerCase()));
+  if (hasN && !hasP) return -1;
+  if (hasP) return 1;
+  return 0;
+}
+
+function judgeGijinkoku(applicant) {
+  const g = REQUIREMENTS.gijinkoku;
+  const checks = []; const missing = []; const suggestions = [];
+  const category = classifyJobCategory(applicant);
+  const cat = g.categories[category];
+
+  const eduOk = ["doctor", "master", "bachelor", "professional_degree"].includes(applicant.educationLevel);
+  const senmonOk = applicant.educationLevel === "senmon" && applicant.isJapaneseUniversity;
+  const expReq = cat.experience_alternative_years;
+  const expOk = applicant.careerYears >= expReq;
+  const eduOrExp = eduOk || senmonOk || expOk;
+
+  let eduDetail;
+  if (eduOk) eduDetail = "大学卒業（学士）以上を充足";
+  else if (senmonOk) eduDetail = "日本の専門学校卒業（専門士・高度専門士）として充足";
+  else if (expOk) eduDetail = `実務経験${applicant.careerYears}年で要件（${expReq}年）を充足`;
+  else {
+    eduDetail = `学歴要件不該当、実務経験${applicant.careerYears}年も必要年数${expReq}年に不足`;
+    missing.push("学歴または実務経験要件");
+    if (applicant.careerYears > 0 && expReq > applicant.careerYears) {
+      suggestions.push(`あと${expReq - applicant.careerYears}年の関連実務経験積み上げで充足可能`);
+    }
+    if (applicant.educationLevel === "senmon" && !applicant.isJapaneseUniversity) {
+      suggestions.push("海外専門学校卒の場合、日本の専門学校卒業（専門士相当）の証明書取得を検討");
+    }
+  }
+  checks.push({ name: "学歴または実務経験", satisfied: eduOrExp, detail: eduDetail, legal_basis: "上陸基準省令 技術・人文知識・国際業務の項" });
+
+  let relevanceOk = true; let relevanceDetail = ""; let relevanceBorderline = false;
+  if (cat.must_match_major) {
+    if (eduOk || senmonOk) {
+      const score = majorRelevanceScore(applicant.majorField, applicant.jobDescription);
+      if (score >= 2) relevanceDetail = "専攻と業務の関連性が明確";
+      else if (score === 1) { relevanceDetail = "専攻と業務の関連性が弱い（境界事例）。立証資料での補強推奨"; relevanceBorderline = true; }
+      else { relevanceOk = false; relevanceDetail = "専攻と業務に関連性が認められない"; missing.push("専攻と業務の関連性"); suggestions.push("業務内容の見直し、または専攻との接続を示す追加資料の準備"); }
+    } else relevanceDetail = "実務経験経由のため専攻関連性は要件外";
+  } else relevanceDetail = "国際業務系は専攻不問";
+  checks.push({ name: "専攻と業務の関連性", satisfied: relevanceOk, detail: relevanceDetail, legal_basis: "上陸基準省令 技術・人文知識・国際業務の項" });
+
+  const salaryOk = applicant.monthlySalaryJpy >= g.salary_threshold_jpy_monthly;
+  let salaryDetail;
+  if (salaryOk) salaryDetail = `月額${applicant.monthlySalaryJpy.toLocaleString()}円で目安額（${g.salary_threshold_jpy_monthly.toLocaleString()}円）以上`;
+  else {
+    salaryDetail = `月額${applicant.monthlySalaryJpy.toLocaleString()}円は目安額（${g.salary_threshold_jpy_monthly.toLocaleString()}円）を下回る`;
+    missing.push("報酬要件（日本人同等額）");
+    suggestions.push("給与の見直し、もしくは同職種・同地域の日本人給与水準との比較資料の準備");
+  }
+  checks.push({ name: "報酬要件（日本人同等額以上）", satisfied: salaryOk, detail: salaryDetail, legal_basis: "上陸基準省令 技術・人文知識・国際業務の項" });
+
+  const profScore = professionalismScore(applicant.jobDescription, g.professional_keywords_positive, g.professional_keywords_negative);
+  let profOk = true; let profDetail;
+  if (profScore >= 1) profDetail = "業務内容に専門性キーワードが含まれており、単純労働該当性は低い";
+  else if (profScore === 0) { profDetail = "業務内容の記述が抽象的。具体的業務内容の補強推奨"; relevanceBorderline = true; }
+  else { profOk = false; profDetail = "業務内容に単純労働を示すキーワードが含まれる。在留資格該当性に問題あり"; missing.push("業務の専門性"); suggestions.push("業務内容を専門性が明確に伝わる形で記述し直す。職務記述書の作成を推奨"); }
+  checks.push({ name: "業務の専門性（在留資格該当性）", satisfied: profOk, detail: profDetail, legal_basis: "入管法 別表第一の二の表 技術・人文知識・国際業務の項" });
+
+  const allOk = checks.every(c => c.satisfied);
+  const oneMissing = checks.filter(c => !c.satisfied).length === 1;
+  let rank, decision;
+  if (allOk && !relevanceBorderline) { rank = "A"; decision = "申請可能"; }
+  else if (allOk && relevanceBorderline) { rank = "B"; decision = "申請可能"; }
+  else if (oneMissing && (missing.includes("専攻と業務の関連性") || relevanceBorderline)) { rank = "C"; decision = "条件付き可能"; }
+  else if (oneMissing) { rank = "D"; decision = "困難"; }
+  else { rank = "E"; decision = "不可"; }
+
+  return {
+    visaType: `${g.name}（${cat.label}）`, rank, rankLabel: g.ranks[rank], decision,
+    checks, missing, suggestions, legalBases: g.legal_basis,
+  };
+}
+
+function ageKey(age) {
+  if (age <= 29) return "u30"; if (age <= 34) return "u35"; if (age <= 39) return "u40"; return "o40";
+}
+
+function judgeKodo(applicant, typeCode) {
+  const k = REQUIREMENTS.kodo_senmonshoku_1;
+  const breakdown = []; let total = 0;
+
+  const eduMap = { doctor: k.education_points.doctor, master: k.education_points.master, professional_degree: k.education_points.master, bachelor: k.education_points.bachelor };
+  if (eduMap[applicant.educationLevel]) {
+    const e = eduMap[applicant.educationLevel];
+    breakdown.push({ category: "学歴", label: e.label, points: e.points });
+    total += e.points;
+  }
+  if (applicant.hasMultipleDegrees) { breakdown.push({ category: "学歴", label: k.education_points.bonus_multiple.label, points: 5 }); total += 5; }
+  if (applicant.hasMbaMot && (typeCode === "ro" || typeCode === "ha")) { breakdown.push({ category: "学歴", label: k.education_points.bonus_mba_mot.label, points: 5 }); total += 5; }
+
+  const relevantYears = typeCode === "ha" ? Math.max(applicant.managementCareerYears || 0, applicant.careerYears) : applicant.careerYears;
+  for (const tier of k.career_points[typeCode]) {
+    if (relevantYears >= tier.years) {
+      breakdown.push({ category: "職歴", label: `職務経験${relevantYears}年（${tier.years}年以上区分）`, points: tier.pts });
+      total += tier.pts; break;
+    }
+  }
+
+  const income = applicant.annualIncomeJpy > 0 ? applicant.annualIncomeJpy : applicant.monthlySalaryJpy * 12;
+  const incomeMan = income / 10000;
+  if (typeCode === "i" || typeCode === "ro") {
+    const ageK = ageKey(applicant.age);
+    for (const tier of k.income_table_iro) {
+      if (incomeMan >= tier.man) {
+        const pts = tier.by_age[ageK];
+        if (pts > 0) {
+          breakdown.push({ category: "年収", label: `年収${Math.floor(incomeMan)}万円（${tier.man}万円帯／${ageK}）`, points: pts });
+          total += pts;
+        }
+        break;
+      }
+    }
+  } else {
+    for (const tier of k.income_table_ha) {
+      if (incomeMan >= tier.man) {
+        breakdown.push({ category: "年収", label: `年収${Math.floor(incomeMan)}万円（${tier.man}万円帯）`, points: tier.pts });
+        total += tier.pts; break;
+      }
+    }
+  }
+
+  if (typeCode === "i" || typeCode === "ro") {
+    for (const tier of k.age_iro) {
+      if (applicant.age <= tier.max) {
+        breakdown.push({ category: "年齢", label: `${tier.max}歳以下`, points: tier.pts });
+        total += tier.pts; break;
+      }
+    }
+  }
+
+  if (applicant.hasResearchPatent) { breakdown.push({ category: "ボーナス", label: "発明者として登録された特許1件以上", points: 20 }); total += 20; }
+  if (applicant.inInnovationProject) { breakdown.push({ category: "ボーナス", label: "イノベーション促進支援措置事業に従事", points: 10 }); total += 10; }
+  if (applicant.isJapaneseUniversity) { breakdown.push({ category: "ボーナス", label: "本邦の大学卒業／大学院修了", points: 10 }); total += 10; }
+  if (applicant.jlptLevel === "N1") { breakdown.push({ category: "ボーナス", label: "日本語能力試験N1取得", points: 15 }); total += 15; }
+  else if (applicant.jlptLevel === "N2") { breakdown.push({ category: "ボーナス", label: "日本語能力試験N2取得", points: 10 }); total += 10; }
+  if (applicant.inGrowthField) { breakdown.push({ category: "ボーナス", label: "成長分野での就労", points: 10 }); total += 10; }
+  if (applicant.completedAdvancedTraining) { breakdown.push({ category: "ボーナス", label: "法務大臣告示の研修修了", points: 5 }); total += 5; }
+
+  const minIncome = k.min_annual_income_jpy[typeCode];
+  const incomeMinOk = income >= minIncome;
+  const missing = []; const suggestions = [];
+
+  let rank, decision;
+  if (!incomeMinOk) {
+    missing.push(`最低年収要件（${minIncome.toLocaleString()}円以上）`);
+    suggestions.push(`年収を${minIncome.toLocaleString()}円以上に引き上げる必要あり（現在${income.toLocaleString()}円）`);
+    rank = "E"; decision = "不可";
+  } else if (total >= 80) { rank = "A"; decision = "申請可能"; }
+  else if (total >= 70) { rank = "B"; decision = "申請可能"; }
+  else if (total >= 60) {
+    rank = "C"; decision = "条件付き可能";
+    const gap = 70 - total;
+    missing.push(`認定基準70点に${gap}点不足`);
+    if (!["N1", "N2"].includes(applicant.jlptLevel)) suggestions.push("日本語能力試験N1取得（+15点）またはN2取得（+10点）");
+    else if (applicant.jlptLevel === "N2") suggestions.push("日本語能力試験N1取得（+5点：N2との差分）");
+    if (!applicant.hasResearchPatent && (typeCode === "i" || typeCode === "ro")) suggestions.push("業務関連の特許登録または論文発表（+20点）");
+    if (!applicant.inGrowthField) suggestions.push("成長分野（AI・バイオ等）での就労（+10点）");
+    suggestions.push("年収100万円アップで5〜10点上昇の可能性");
+  } else if (total >= 50) {
+    rank = "D"; decision = "困難";
+    missing.push(`認定基準70点に${70 - total}点不足`);
+    suggestions.push("技術・人文知識・国際業務の併願検討を推奨");
+  } else {
+    rank = "E"; decision = "不可";
+    missing.push("ポイント大幅不足。技術・人文知識・国際業務の判定を優先");
+  }
+
+  return {
+    visaType: `${k.name} ${k.types[typeCode].label}`,
+    rank, rankLabel: k.ranks[rank], decision, score: total,
+    breakdown, missing, suggestions, legalBases: k.legal_basis,
+  };
+}
+
+function judgeJSkip(applicant) {
+  const j = REQUIREMENTS.j_skip;
+  const income = applicant.annualIncomeJpy > 0 ? applicant.annualIncomeJpy : applicant.monthlySalaryJpy * 12;
+  const matched = [];
+
+  if (["master", "doctor", "professional_degree"].includes(applicant.educationLevel) && income >= 20000000) {
+    matched.push("修士号以上 ＋ 年収2,000万円以上（イ・ロ）");
+  }
+  if (applicant.careerYears >= 10 && income >= 20000000) {
+    matched.push("実務経験10年以上 ＋ 年収2,000万円以上（イ・ロ）");
+  }
+  if ((applicant.managementCareerYears || 0) >= 5 && income >= 40000000) {
+    matched.push("経営・管理実務経験5年以上 ＋ 年収4,000万円以上（ハ）");
+  }
+
+  if (matched.length > 0) {
+    return {
+      visaType: j.name, rank: "A", rankLabel: "特別高度人材として認定可能（最優遇）", decision: "申請可能",
+      checks: [{ name: "J-Skip該当パターン", satisfied: true, detail: matched.join(" / "),
+                 legal_basis: "高度専門職省令 特別高度人材関連規定（2023年4月施行）" }],
+      missing: [], suggestions: j.benefits.map(b => `特典：${b}`),
+      legalBases: j.legal_basis,
+    };
+  }
+
+  const incomeMan = income / 10000;
+  const nearMiss = [];
+  if (incomeMan >= 1500 && ["master", "doctor", "professional_degree"].includes(applicant.educationLevel)) {
+    nearMiss.push(`年収を${(20000000 - income).toLocaleString()}円増やせばイ・ロ要件充足`);
+  }
+  if (incomeMan >= 3000 && (applicant.managementCareerYears || 0) >= 5) {
+    nearMiss.push(`年収を${(40000000 - income).toLocaleString()}円増やせばハ要件充足`);
+  }
+
+  if (nearMiss.length > 0) {
+    return {
+      visaType: j.name, rank: "C", rankLabel: "条件付き可能：年収要件にあと一歩", decision: "条件付き可能",
+      missing: ["年収要件未充足"], suggestions: nearMiss, legalBases: j.legal_basis,
+    };
+  }
+  return null;
+}
+
+function judgeAll(applicant) {
+  const judgments = {};
+  judgments.gijinkoku = judgeGijinkoku(applicant);
+  judgments.kodo_i = judgeKodo(applicant, "i");
+  judgments.kodo_ro = judgeKodo(applicant, "ro");
+  judgments.kodo_ha = judgeKodo(applicant, "ha");
+  const j = judgeJSkip(applicant);
+  if (j) judgments.j_skip = j;
+
+  const priority = { A: 0, B: 1, C: 2, D: 3, E: 4 };
+  let best = null;
+  for (const v of Object.values(judgments)) {
+    if (!best || priority[v.rank] < priority[best.rank]) best = v;
+  }
+  return { judgments, best };
+}
+
+/* ========================================================================
+   Word出力
+   ======================================================================== */
+function generateWordReport(applicant, results, clientName, candidateName) {
+  const today = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+  const rankColors = { A: '#1B5E20', B: '#2E7D32', C: '#F57F17', D: '#D84315', E: '#B71C1C' };
+  const best = results.best;
+
+  const renderCheck = (c) => `
+    <p style="margin:4pt 0 0 12pt;"><span style="color:${c.satisfied ? '#1B5E20' : '#B71C1C'};font-weight:bold;">${c.satisfied ? '✓' : '✗'}</span>
+    <b>${c.name}</b></p>
+    <p style="margin:2pt 0 0 24pt;font-size:9pt;color:#666;">${c.detail}</p>
+    ${c.legal_basis ? `<p style="margin:0 0 4pt 24pt;font-size:8pt;color:#999;font-style:italic;">［根拠］${c.legal_basis}</p>` : ''}
+  `;
+
+  const renderJudgment = (j) => `
+    <h2 style="font-family:'Yu Mincho',serif;font-size:13pt;color:#C0392B;border-bottom:1pt solid #C0392B;padding-bottom:2pt;margin-top:18pt;">▼ ${j.visaType}</h2>
+    <table style="width:100%;border-collapse:collapse;margin:8pt 0;">
+      <tr>
+        <td style="background:${rankColors[j.rank]};color:#fff;text-align:center;font-size:24pt;font-weight:bold;width:80pt;padding:8pt;">${j.rank}</td>
+        <td style="padding:8pt 12pt;font-family:'Yu Mincho',serif;font-size:13pt;font-weight:bold;">${j.decision}</td>
+        <td style="padding:8pt;font-size:9pt;color:#666;">${j.score !== undefined ? `<b>${j.score}点</b><br>` : ''}${j.rankLabel}</td>
+      </tr>
+    </table>
+    ${j.breakdown && j.breakdown.length > 0 ? `
+      <p style="margin:12pt 0 4pt;font-weight:bold;">● ポイント内訳</p>
+      <table style="width:100%;border-collapse:collapse;border:0.5pt solid #ccc;">
+        <tr style="background:#1A1A1A;color:#fff;">
+          <th style="padding:4pt 8pt;text-align:left;font-size:9pt;">カテゴリ</th>
+          <th style="padding:4pt 8pt;text-align:left;font-size:9pt;">項目</th>
+          <th style="padding:4pt 8pt;text-align:right;font-size:9pt;">ポイント</th>
+        </tr>
+        ${j.breakdown.map(b => `
+          <tr>
+            <td style="padding:4pt 8pt;font-size:9pt;border-bottom:0.5pt solid #eee;">${b.category}</td>
+            <td style="padding:4pt 8pt;font-size:9pt;border-bottom:0.5pt solid #eee;">${b.label}</td>
+            <td style="padding:4pt 8pt;font-size:9pt;text-align:right;color:#C0392B;font-weight:bold;border-bottom:0.5pt solid #eee;">+${b.points}</td>
+          </tr>`).join('')}
+      </table>
+    ` : ''}
+    ${j.checks && j.checks.length > 0 ? `<p style="margin:12pt 0 4pt;font-weight:bold;">● 要件充足チェック</p>${j.checks.map(renderCheck).join('')}` : ''}
+    ${j.missing.length > 0 ? `<p style="margin:12pt 0 4pt;font-weight:bold;color:#B71C1C;">● 不足要件</p>${j.missing.map(m => `<p style="margin:2pt 0 2pt 12pt;font-size:9pt;">・ ${m}</p>`).join('')}` : ''}
+    ${j.suggestions.length > 0 ? `<p style="margin:12pt 0 4pt;font-weight:bold;color:#C0392B;">● 推奨対応・解決策</p>${j.suggestions.map(s => `<p style="margin:2pt 0 2pt 12pt;font-size:9pt;">・ ${s}</p>`).join('')}` : ''}
+  `;
+
+  const html = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<title>在留資格適合性診断報告書</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+body { font-family: 'Yu Gothic', 'Meiryo', sans-serif; font-size: 10pt; color: #1A1A1A; line-height:1.6; }
+h1 { font-family: 'Yu Mincho', serif; font-size: 22pt; text-align: center; margin: 24pt 0 8pt; }
+h2 { font-family: 'Yu Mincho', serif; }
+table { border-collapse: collapse; }
+.cover-info { width:60%; margin: 20pt auto; }
+.cover-info td { padding: 6pt 12pt; font-size: 11pt; border:none; }
+.cover-info td.label { background:#F5F5F5; font-weight:bold; width:30%; }
+.section-title { font-family:'Yu Mincho', serif; font-size:16pt; font-weight:bold; border-bottom: 2pt solid #C0392B; padding-bottom:4pt; margin-top:24pt; margin-bottom:12pt; }
+</style>
+</head>
+<body>
+  <p style="text-align:right;font-size:9pt;color:#666;">行政書士 吉岡康生事務所</p>
+  <p style="text-align:right;font-size:8pt;color:#666;">登録番号 第25306704号（兵庫県行政書士会阪神支部）</p>
+
+  <h1>在 留 資 格 適 合 性  診 断 報 告 書</h1>
+  <p style="text-align:center;color:#C0392B;font-style:italic;">Visa Eligibility Diagnostic Report</p>
+
+  <table class="cover-info">
+    <tr><td class="label">ご報告先</td><td>${clientName || '（クライアント企業名）'}</td></tr>
+    <tr><td class="label">対象者</td><td>${candidateName || '（対象外国人氏名）'}</td></tr>
+    <tr><td class="label">診断日</td><td>${today}</td></tr>
+  </table>
+
+  <p style="text-align:center;font-size:8pt;color:#999;">──── 守秘義務 行政書士法 第十二条遵守 ────</p>
+  <p style="page-break-before:always;"></p>
+
+  <p class="section-title">1. エグゼクティブサマリー</p>
+  ${best ? `
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <td style="background:${rankColors[best.rank]};color:#fff;text-align:center;font-size:48pt;font-weight:bold;width:80pt;padding:16pt;">${best.rank}</td>
+        <td style="padding:16pt;">
+          <p style="font-family:'Yu Mincho',serif;font-size:14pt;font-weight:bold;margin:0;">${best.visaType}</p>
+          <p style="color:#C0392B;font-size:12pt;font-weight:bold;margin:4pt 0;">判定：${best.decision}</p>
+          ${best.score !== undefined ? `<p style="font-weight:bold;margin:4pt 0;">ポイント合計：${best.score}点</p>` : ''}
+          <p style="color:#666;font-size:9pt;margin:4pt 0;">${best.rankLabel}</p>
+        </td>
+      </tr>
+    </table>
+  ` : ''}
+  <p style="font-size:9pt;color:#666;margin-top:12pt;">本診断は、ご提供いただいた情報をもとに、出入国在留管理庁公表の最新基準（特別高度人材制度（J-Skip）含む）に照らして在留資格の適合性を機械的に評価したものです。最終判断は出入国在留管理局の審査によります。</p>
+
+  <p class="section-title">2. ご提供いただいた情報</p>
+  <table style="width:100%;border-collapse:collapse;">
+    ${[
+      ['年齢', `${applicant.age}歳`],
+      ['学歴', applicant.educationLevel],
+      ['専攻分野', applicant.majorField],
+      ['本邦の大学卒業', applicant.isJapaneseUniversity ? 'はい' : 'いいえ'],
+      ['実務経験', `${applicant.careerYears}年（${applicant.careerField}）`],
+      ['日本語能力', applicant.jlptLevel],
+      ['現在の在留資格', applicant.currentVisaStatus || '（記載なし）'],
+      ['予定職種', applicant.jobTitle],
+      ['業務内容', applicant.jobDescription],
+      ['月額給与', `${applicant.monthlySalaryJpy.toLocaleString()}円`],
+      ['年収', `${(applicant.annualIncomeJpy > 0 ? applicant.annualIncomeJpy : applicant.monthlySalaryJpy * 12).toLocaleString()}円`],
+      ['雇用形態', applicant.employmentType],
+    ].map(([k, v]) => `<tr><td style="background:#F5F5F5;padding:4pt 8pt;font-size:9pt;font-weight:bold;width:25%;">${k}</td><td style="padding:4pt 8pt;font-size:9pt;">${v}</td></tr>`).join('')}
+  </table>
+
+  <p class="section-title">3. 各在留資格の判定詳細</p>
+  ${Object.values(results.judgments).map(renderJudgment).join('')}
+
+  <p class="section-title">4. 法的根拠</p>
+  ${(() => {
+    const seen = new Set(); const items = [];
+    Object.values(results.judgments).forEach(j => j.legalBases.forEach(lb => {
+      const k = lb.law + lb.article;
+      if (!seen.has(k)) { seen.add(k); items.push(lb); }
+    }));
+    return items.map(lb => `
+      <p style="font-family:'Yu Mincho',serif;font-weight:bold;margin:8pt 0 2pt;">■ ${lb.law} ${lb.article}</p>
+      <p style="font-size:9pt;color:#666;margin:0 0 4pt 12pt;">${lb.summary}</p>
+    `).join('');
+  })()}
+
+  <p class="section-title">5. 注意事項</p>
+  ${[
+    "本診断は、ご提供いただいた情報のみを根拠として行ったものであり、最終的な許可判断は出入国在留管理局の審査結果によります。",
+    "実際の申請にあたっては、雇用契約書・卒業証明書・職務経歴書等の立証資料の整備が不可欠です。",
+    "在留資格制度は法令改正・運用変更が頻繁に発生します。本書面の判定基準は記載の診断日時点のものです。",
+    "本書面に記載された対象者の個人情報・企業情報は、行政書士法第12条（守秘義務）に基づき厳重に管理されます。",
+    "本書面の内容は当事務所による正式な意見書・受任前の参考診断であり、本診断のみをもって申請手続を進めることは推奨いたしません。",
+  ].map(n => `<p style="margin:4pt 0 4pt 12pt;font-size:9pt;">・ ${n}</p>`).join('')}
+
+  <p style="text-align:center;color:#C0392B;margin-top:24pt;">─────────────────────</p>
+  <p style="text-align:center;font-family:'Yu Mincho',serif;font-size:13pt;font-weight:bold;">行政書士 吉岡康生事務所</p>
+  <p style="text-align:center;font-size:9pt;color:#666;">登録番号 第25306704号（兵庫県行政書士会阪神支部）／ 申請取次行政書士</p>
+  <p style="text-align:center;font-size:9pt;color:#666;">TEL: 072-741-6693 ／ Email: yasuo@yoshioka-gyosei.jp</p>
+  <p style="text-align:center;font-size:9pt;color:#666;">営業時間：平日 9:00〜18:00（土日祝休）</p>
+</body>
+</html>`;
+
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  const ts = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  link.download = `在留資格診断報告書_${ts}.doc`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ========================================================================
+   UI コンポーネント
+   ======================================================================== */
+const RANK_STYLES = {
+  A: { bg: 'bg-emerald-700', text: 'text-emerald-700' },
+  B: { bg: 'bg-emerald-600', text: 'text-emerald-600' },
+  C: { bg: 'bg-amber-600', text: 'text-amber-600' },
+  D: { bg: 'bg-orange-700', text: 'text-orange-700' },
+  E: { bg: 'bg-red-800', text: 'text-red-800' },
+};
+
+function FieldLabel({ children, icon: IconComp }) {
+  return (
+    <label className="flex items-center gap-1.5 text-xs font-medium text-stone-700 mb-1.5 tracking-wide">
+      {IconComp && <IconComp size={12} className="text-red-700" />}
+      {children}
+    </label>
+  );
+}
+
+function TextInput({ value, onChange, placeholder, type = "text", min }) {
+  return (
+    <input
+      type={type} value={value} onChange={onChange} placeholder={placeholder} min={min}
+      className="w-full px-3 py-2 text-sm bg-white border border-stone-300 rounded-sm
+                 focus:outline-none focus:border-red-700 focus:ring-1 focus:ring-red-700/30
+                 transition placeholder:text-stone-400"
+    />
+  );
+}
+
+function SelectInput({ value, onChange, options }) {
+  return (
+    <select value={value} onChange={onChange}
+      className="w-full px-3 py-2 text-sm bg-white border border-stone-300 rounded-sm
+                 focus:outline-none focus:border-red-700 focus:ring-1 focus:ring-red-700/30 transition">
+      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
+  );
+}
+
+function CheckboxField({ checked, onChange, label }) {
+  return (
+    <label className="flex items-center gap-2 py-1 cursor-pointer text-sm text-stone-700 hover:text-stone-900">
+      <input type="checkbox" checked={checked} onChange={onChange}
+        className="w-4 h-4 accent-red-700 cursor-pointer" />
+      {label}
+    </label>
+  );
+}
+
+function RankBadge({ rank, large = false }) {
+  const styles = RANK_STYLES[rank] || RANK_STYLES.E;
+  const sz = large ? 'w-20 h-20 text-5xl' : 'w-12 h-12 text-2xl';
+  return (
+    <div className={`${styles.bg} ${sz} flex items-center justify-center text-white font-bold rounded-sm shadow-sm`}>
+      {rank}
+    </div>
+  );
+}
+
+function JudgmentCard({ judgment, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const styles = RANK_STYLES[judgment.rank] || RANK_STYLES.E;
+
+  return (
+    <div className="bg-white border border-stone-200 rounded-sm overflow-hidden">
+      <button onClick={() => setOpen(!open)}
+        className="w-full px-4 py-3 flex items-center gap-4 hover:bg-stone-50 transition text-left">
+        <RankBadge rank={judgment.rank} />
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-semibold text-stone-900 mb-0.5">{judgment.visaType}</div>
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <span className={`text-sm font-bold ${styles.text}`}>{judgment.decision}</span>
+            {judgment.score !== undefined && (
+              <span className="text-xs text-stone-600">{judgment.score}点</span>
+            )}
+          </div>
+          <div className="text-xs text-stone-500 mt-0.5 line-clamp-1">{judgment.rankLabel}</div>
+        </div>
+        {open ? <ChevronDown size={18} className="text-stone-400" /> : <ChevronRight size={18} className="text-stone-400" />}
+      </button>
+
+      {open && (
+        <div className="px-4 pb-4 pt-2 border-t border-stone-100 space-y-4">
+          {judgment.breakdown && judgment.breakdown.length > 0 && (
+            <div>
+              <div className="text-xs font-bold text-stone-700 mb-2 tracking-wider">● ポイント内訳</div>
+              <div className="border border-stone-200 rounded-sm overflow-hidden">
+                <table className="w-full text-xs">
+                  <thead className="bg-stone-900 text-white">
+                    <tr>
+                      <th className="px-3 py-1.5 text-left font-medium">カテゴリ</th>
+                      <th className="px-3 py-1.5 text-left font-medium">項目</th>
+                      <th className="px-3 py-1.5 text-right font-medium">点</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {judgment.breakdown.map((b, i) => (
+                      <tr key={i} className="border-t border-stone-100">
+                        <td className="px-3 py-1.5 text-stone-600">{b.category}</td>
+                        <td className="px-3 py-1.5 text-stone-800">{b.label}</td>
+                        <td className="px-3 py-1.5 text-right text-red-700 font-bold">+{b.points}</td>
+                      </tr>
+                    ))}
+                    <tr className="border-t border-stone-300 bg-stone-50">
+                      <td colSpan={2} className="px-3 py-1.5 text-right font-bold text-stone-700">合計</td>
+                      <td className="px-3 py-1.5 text-right font-bold text-red-700 text-sm">{judgment.score}点</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {judgment.checks && judgment.checks.length > 0 && (
+            <div>
+              <div className="text-xs font-bold text-stone-700 mb-2 tracking-wider">● 要件充足チェック</div>
+              <div className="space-y-2">
+                {judgment.checks.map((c, i) => (
+                  <div key={i} className="text-xs">
+                    <div className="flex items-start gap-2">
+                      {c.satisfied ? <CheckCircle2 size={14} className="text-emerald-700 mt-0.5 flex-shrink-0" />
+                                   : <XCircle size={14} className="text-red-700 mt-0.5 flex-shrink-0" />}
+                      <div className="flex-1">
+                        <div className="font-bold text-stone-800">{c.name}</div>
+                        <div className="text-stone-600 mt-0.5">{c.detail}</div>
+                        {c.legal_basis && <div className="text-stone-400 italic mt-0.5 text-[10px]">［根拠］{c.legal_basis}</div>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {judgment.missing && judgment.missing.length > 0 && (
+            <div>
+              <div className="text-xs font-bold text-red-800 mb-2 tracking-wider">● 不足要件</div>
+              <ul className="space-y-1 text-xs text-stone-700">
+                {judgment.missing.map((m, i) => <li key={i} className="pl-3">・ {m}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {judgment.suggestions && judgment.suggestions.length > 0 && (
+            <div className="bg-red-50 border-l-2 border-red-700 px-3 py-2.5">
+              <div className="text-xs font-bold text-red-800 mb-1.5 tracking-wider">● 推奨対応・解決策</div>
+              <ul className="space-y-1 text-xs text-stone-700">
+                {judgment.suggestions.map((s, i) => <li key={i} className="pl-2">・ {s}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {judgment.legalBases && judgment.legalBases.length > 0 && (
+            <details className="text-xs">
+              <summary className="cursor-pointer text-stone-500 hover:text-stone-700 select-none">法的根拠を表示</summary>
+              <div className="mt-2 space-y-1.5 pl-3 border-l border-stone-200">
+                {judgment.legalBases.map((lb, i) => (
+                  <div key={i}>
+                    <div className="font-bold text-stone-700">{lb.law} {lb.article}</div>
+                    <div className="text-stone-500">{lb.summary}</div>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================
+   メインアプリ
+   ======================================================================== */
+function App() {
+  const [applicant, setApplicant] = useState({
+    age: 30,
+    educationLevel: 'master',
+    majorField: '情報工学',
+    isJapaneseUniversity: false,
+    hasMultipleDegrees: false,
+    hasMbaMot: false,
+    careerYears: 5,
+    careerField: 'システムエンジニア',
+    jlptLevel: 'N2',
+    currentVisaStatus: '',
+    jobTitle: 'システムエンジニア',
+    jobDescription: 'Webアプリケーションの設計・開発・保守。Pythonによるバックエンド開発、データベース設計、システム運用',
+    monthlySalaryJpy: 500000,
+    annualIncomeJpy: 6000000,
+    employmentType: '正社員',
+    employerEmployees: 120,
+    employerCapitalJpy: 50000000,
+    employerYears: 15,
+    hasResearchPatent: false,
+    inInnovationProject: false,
+    inGrowthField: false,
+    completedAdvancedTraining: false,
+    managementCareerYears: 0,
+  });
+
+  const [clientName, setClientName] = useState('');
+  const [candidateName, setCandidateName] = useState('');
+
+  const update = (key, value) => setApplicant(prev => ({ ...prev, [key]: value }));
+
+  const results = useMemo(() => judgeAll(applicant), [applicant]);
+  const judgmentList = Object.values(results.judgments);
+
+  return (
+    <div className="min-h-screen bg-stone-50">
+      <header className="bg-white border-b border-stone-200">
+        <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-red-800 flex items-center justify-center text-white">
+              <Stamp size={24} />
+            </div>
+            <div>
+              <div className="font-mincho text-lg font-bold text-stone-900 leading-tight">行政書士 吉岡康生事務所</div>
+              <div className="text-xs text-stone-500">登録番号 第25306704号 ／ 兵庫県行政書士会阪神支部 ／ 申請取次行政書士</div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="font-mincho text-sm font-bold text-red-800">技人国・高度専門職 簡易診断</div>
+            <div className="text-[10px] text-stone-400 tracking-wider">GIJINKOKU & HIGHLY-SKILLED PROFESSIONAL DIAGNOSTIC</div>
+            <a href="tokutei_simulator.html" className="inline-block mt-1.5 text-[11px] text-red-700 hover:text-red-900 hover:underline tracking-wide">
+              → 特定技能をお探しの方はこちら
+            </a>
+          </div>
+        </div>
+        <div className="h-1 bg-gradient-to-r from-red-800 via-red-700 to-red-800"></div>
+      </header>
+
+      <main className="max-w-[1400px] mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[460px_1fr] gap-6">
+
+          <div className="space-y-4">
+            <div className="bg-white border border-stone-200 rounded-sm">
+              <div className="px-4 py-3 border-b border-stone-200 bg-stone-50 flex items-center gap-2">
+                <User size={16} className="text-red-800" />
+                <h2 className="font-mincho text-base font-bold text-stone-900">本人情報</h2>
+              </div>
+              <div className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel>年齢</FieldLabel>
+                    <TextInput type="number" min="18" value={applicant.age}
+                      onChange={e => update('age', parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div>
+                    <FieldLabel>日本語能力</FieldLabel>
+                    <SelectInput value={applicant.jlptLevel} onChange={e => update('jlptLevel', e.target.value)}
+                      options={[
+                        { value: 'N1', label: 'JLPT N1' }, { value: 'N2', label: 'JLPT N2' },
+                        { value: 'N3', label: 'JLPT N3' }, { value: 'N4', label: 'JLPT N4' },
+                        { value: 'N5', label: 'JLPT N5' }, { value: 'none', label: 'なし' },
+                      ]} />
+                  </div>
+                </div>
+
+                <div>
+                  <FieldLabel icon={GraduationCap}>最終学歴</FieldLabel>
+                  <SelectInput value={applicant.educationLevel} onChange={e => update('educationLevel', e.target.value)}
+                    options={[
+                      { value: 'doctor', label: '博士号' },
+                      { value: 'master', label: '修士号' },
+                      { value: 'professional_degree', label: '専門職学位（MBA・MOT等）' },
+                      { value: 'bachelor', label: '大学卒業（学士）' },
+                      { value: 'senmon', label: '専門学校卒業（専門士・高度専門士）' },
+                      { value: 'koukou', label: '高校卒業' },
+                      { value: 'other', label: 'その他' },
+                    ]} />
+                </div>
+
+                <div>
+                  <FieldLabel>専攻分野</FieldLabel>
+                  <TextInput value={applicant.majorField}
+                    onChange={e => update('majorField', e.target.value)} placeholder="例：情報工学、経営学" />
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <CheckboxField checked={applicant.isJapaneseUniversity}
+                    onChange={e => update('isJapaneseUniversity', e.target.checked)} label="本邦の大学（院）卒業" />
+                  <CheckboxField checked={applicant.hasMultipleDegrees}
+                    onChange={e => update('hasMultipleDegrees', e.target.checked)} label="複数分野で修士以上を複数所持" />
+                  <CheckboxField checked={applicant.hasMbaMot}
+                    onChange={e => update('hasMbaMot', e.target.checked)} label="MBA・MOT等の経営関連学位あり" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div>
+                    <FieldLabel icon={Briefcase}>実務経験年数</FieldLabel>
+                    <TextInput type="number" min="0" value={applicant.careerYears}
+                      onChange={e => update('careerYears', parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div>
+                    <FieldLabel>経営・管理経験年数</FieldLabel>
+                    <TextInput type="number" min="0" value={applicant.managementCareerYears}
+                      onChange={e => update('managementCareerYears', parseInt(e.target.value) || 0)} />
+                  </div>
+                </div>
+                <div>
+                  <FieldLabel>経験職種</FieldLabel>
+                  <TextInput value={applicant.careerField}
+                    onChange={e => update('careerField', e.target.value)} placeholder="例：システムエンジニア" />
+                </div>
+                <div>
+                  <FieldLabel>現在の在留資格（任意）</FieldLabel>
+                  <TextInput value={applicant.currentVisaStatus}
+                    onChange={e => update('currentVisaStatus', e.target.value)} placeholder="例：技術・人文知識・国際業務" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-stone-200 rounded-sm">
+              <div className="px-4 py-3 border-b border-stone-200 bg-stone-50 flex items-center gap-2">
+                <Building2 size={16} className="text-red-800" />
+                <h2 className="font-mincho text-base font-bold text-stone-900">雇用条件</h2>
+              </div>
+              <div className="p-4 space-y-3">
+                <div>
+                  <FieldLabel>採用予定の職種</FieldLabel>
+                  <TextInput value={applicant.jobTitle}
+                    onChange={e => update('jobTitle', e.target.value)} placeholder="例：システムエンジニア" />
+                </div>
+                <div>
+                  <FieldLabel>具体的業務内容</FieldLabel>
+                  <textarea value={applicant.jobDescription}
+                    onChange={e => update('jobDescription', e.target.value)}
+                    rows="3"
+                    className="w-full px-3 py-2 text-sm bg-white border border-stone-300 rounded-sm
+                               focus:outline-none focus:border-red-700 focus:ring-1 focus:ring-red-700/30 transition resize-none"
+                    placeholder="業務内容を具体的に記述。専門性が伝わる動詞・固有名詞を含めること"></textarea>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel>月額給与（円）</FieldLabel>
+                    <TextInput type="number" min="0" value={applicant.monthlySalaryJpy}
+                      onChange={e => update('monthlySalaryJpy', parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div>
+                    <FieldLabel>年収（円・賞与含む）</FieldLabel>
+                    <TextInput type="number" min="0" value={applicant.annualIncomeJpy}
+                      onChange={e => update('annualIncomeJpy', parseInt(e.target.value) || 0)} />
+                  </div>
+                </div>
+                <div>
+                  <FieldLabel>雇用形態</FieldLabel>
+                  <SelectInput value={applicant.employmentType} onChange={e => update('employmentType', e.target.value)}
+                    options={[
+                      { value: '正社員', label: '正社員' }, { value: '契約社員', label: '契約社員' },
+                      { value: '派遣', label: '派遣' }, { value: 'その他', label: 'その他' },
+                    ]} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <div>
+                    <FieldLabel>従業員数</FieldLabel>
+                    <TextInput type="number" min="0" value={applicant.employerEmployees}
+                      onChange={e => update('employerEmployees', parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div>
+                    <FieldLabel>資本金（円）</FieldLabel>
+                    <TextInput type="number" min="0" value={applicant.employerCapitalJpy}
+                      onChange={e => update('employerCapitalJpy', parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div>
+                    <FieldLabel>設立年数</FieldLabel>
+                    <TextInput type="number" min="0" value={applicant.employerYears}
+                      onChange={e => update('employerYears', parseInt(e.target.value) || 0)} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-stone-200 rounded-sm">
+              <div className="px-4 py-3 border-b border-stone-200 bg-stone-50 flex items-center gap-2">
+                <Sparkles size={16} className="text-red-800" />
+                <h2 className="font-mincho text-base font-bold text-stone-900">高度専門職ボーナス項目</h2>
+              </div>
+              <div className="p-4 space-y-1">
+                <CheckboxField checked={applicant.hasResearchPatent}
+                  onChange={e => update('hasResearchPatent', e.target.checked)} label="特許登録または論文等の研究実績あり" />
+                <CheckboxField checked={applicant.inInnovationProject}
+                  onChange={e => update('inInnovationProject', e.target.checked)} label="イノベーション促進事業に従事" />
+                <CheckboxField checked={applicant.inGrowthField}
+                  onChange={e => update('inGrowthField', e.target.checked)} label="成長分野（AI・バイオ等）での就労" />
+                <CheckboxField checked={applicant.completedAdvancedTraining}
+                  onChange={e => update('completedAdvancedTraining', e.target.checked)} label="法務大臣告示の研修修了" />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {results.best && (
+              <div className="bg-white border-2 border-red-800 rounded-sm overflow-hidden">
+                <div className="bg-red-800 text-white px-4 py-2 flex items-center gap-2">
+                  <ScrollText size={14} />
+                  <span className="text-xs font-bold tracking-widest">最良判定 ／ BEST MATCH</span>
+                </div>
+                <div className="p-5 flex items-center gap-5">
+                  <RankBadge rank={results.best.rank} large />
+                  <div className="flex-1">
+                    <div className="font-mincho text-xl font-bold text-stone-900 mb-1">{results.best.visaType}</div>
+                    <div className="flex items-baseline gap-3 mb-2 flex-wrap">
+                      <span className={`font-mincho text-lg font-bold ${RANK_STYLES[results.best.rank].text}`}>
+                        判定：{results.best.decision}
+                      </span>
+                      {results.best.score !== undefined && (
+                        <span className="text-sm font-bold text-stone-700">{results.best.score}点</span>
+                      )}
+                    </div>
+                    <div className="text-sm text-stone-600">{results.best.rankLabel}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white border border-stone-200 rounded-sm">
+              <div className="px-4 py-3 border-b border-stone-200 bg-stone-50 flex items-center gap-2">
+                <FileText size={16} className="text-red-800" />
+                <h2 className="font-mincho text-base font-bold text-stone-900">クライアント向け診断レポート</h2>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <FieldLabel>クライアント企業名</FieldLabel>
+                    <TextInput value={clientName} onChange={e => setClientName(e.target.value)}
+                      placeholder="株式会社○○" />
+                  </div>
+                  <div>
+                    <FieldLabel>対象者氏名</FieldLabel>
+                    <TextInput value={candidateName} onChange={e => setCandidateName(e.target.value)}
+                      placeholder="山田 太郎" />
+                  </div>
+                </div>
+                <button onClick={() => generateWordReport(applicant, results, clientName, candidateName)}
+                  className="w-full px-4 py-2.5 bg-red-800 hover:bg-red-900 text-white font-bold text-sm
+                             rounded-sm transition flex items-center justify-center gap-2 tracking-wide">
+                  <Download size={16} />
+                  Word形式でダウンロード（.doc）
+                </button>
+                <p className="text-[10px] text-stone-500 mt-2 leading-relaxed">
+                  ※ 出力ファイルはMicrosoft Word互換形式です。事務所名・登録番号・診断日が自動挿入されます。
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-3 px-1">
+                <div className="h-px flex-1 bg-stone-300"></div>
+                <h2 className="font-mincho text-sm font-bold text-stone-700 px-2">各在留資格の判定詳細</h2>
+                <div className="h-px flex-1 bg-stone-300"></div>
+              </div>
+              <div className="space-y-2">
+                {judgmentList.map((j, i) => (
+                  <JudgmentCard key={i} judgment={j} defaultOpen={i === 0} />
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-sm p-4 text-xs text-stone-700 leading-relaxed">
+              <div className="flex items-start gap-2">
+                <AlertCircle size={14} className="text-amber-700 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-bold mb-1 text-amber-800">本診断ツールについて</div>
+                  <p className="mb-1">本診断は、入力情報をもとに出入国在留管理庁公表の最新基準（特別高度人材制度J-Skip含む）に照らして在留資格の適合性を機械的に評価するものです。最終判断は出入国在留管理局の審査によります。</p>
+                  <p>個人情報・企業情報は行政書士法第12条（守秘義務）に基づき厳重に管理されます。</p>
+                </div>
+              </div>
+            </div>
+
+            {/* お問い合わせCTAエリア */}
+            <div className="bg-white border-2 border-red-800 rounded-sm overflow-hidden">
+              <div className="bg-red-800 text-white px-4 py-2 flex items-center gap-2">
+                <Stamp size={14} />
+                <span className="text-xs font-bold tracking-widest">無料相談 ／ FREE CONSULTATION</span>
+              </div>
+              <div className="p-5 space-y-3">
+                <p className="text-sm text-stone-700 text-center leading-relaxed">
+                  診断結果のご相談・申請手続のご依頼は、お気軽にお問い合わせください。
+                </p>
+                <p className="text-[11px] text-stone-500 text-center">
+                  電話受付：平日 9:00〜18:00（土日祝休）
+                </p>
+                <a href="tel:0727416693"
+                   className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-800 hover:bg-red-900 text-white font-bold text-sm
+                              rounded-sm transition tracking-wide">
+                  <Phone size={16} />
+                  電話相談 072-741-6693
+                </a>
+                <a href="mailto:yasuo@yoshioka-gyosei.jp?subject=技人国・高度専門職に関するお問い合わせ&body=【お名前】%0A%0A【ご相談内容】%0A%0A"
+                   className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white border-2 border-red-800 hover:bg-red-50 text-red-800 font-bold text-sm
+                              rounded-sm transition tracking-wide">
+                  <Mail size={16} />
+                  メールで問い合わせる
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer className="mt-12 pt-6 border-t border-stone-300 text-center">
+          <div className="font-mincho text-base font-bold text-stone-800 mb-1">行政書士 吉岡康生事務所</div>
+          <div className="text-xs text-stone-500">登録番号 第25306704号 ／ 兵庫県行政書士会阪神支部 ／ 申請取次行政書士</div>
+          <div className="text-xs text-stone-600 mt-2">
+            TEL: <a href="tel:0727416693" className="text-red-800 hover:underline">072-741-6693</a>
+            ｜ Email: <a href="mailto:yasuo@yoshioka-gyosei.jp" className="text-red-800 hover:underline">yasuo@yoshioka-gyosei.jp</a>
+            ｜ 営業時間: 平日 9:00〜18:00（土日祝休）
+          </div>
+          <div className="text-xs text-stone-500 mt-3">
+            <a href="tokutei_simulator.html" className="text-red-700 hover:underline">▶ 特定技能 簡易診断はこちら</a>
+          </div>
+          <div className="text-[10px] text-stone-400 mt-3">
+            判定エンジン v{REQUIREMENTS.version} ／ 最終更新 {REQUIREMENTS.last_updated}
+          </div>
+        </footer>
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>

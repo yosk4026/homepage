@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>特定技能 簡易診断｜行政書士 吉岡康生事務所</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.25.6/babel.min.js"></script>
+
+<style>
+  body { font-family: 'Zen Kaku Gothic New', sans-serif; margin: 0; background: #f7f5f3; }
+  .font-mincho { font-family: 'Shippori Mincho', serif; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.35s ease forwards; }
+
+  @keyframes barGrow {
+    from { width: 0%; }
+  }
+  .bar-animate { animation: barGrow 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+  @keyframes pulseRed {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(153,27,27,0.18); }
+    50% { box-shadow: 0 0 0 7px rgba(153,27,27,0); }
+  }
+  .pulse-red { animation: pulseRed 2.4s ease-in-out infinite; }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, #1c1917 0%, #44403c 45%, #6b3430 100%);
+  }
+  .hero-pattern {
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.015) 0px,
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 12px
+    );
+  }
+  .section-card {
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 0 0 0.5px rgba(0,0,0,0.04);
+  }
+  .result-card-shadow {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .rank-A-glow { box-shadow: 0 0 0 3px rgba(4,120,87,0.18), 0 4px 20px rgba(0,0,0,0.10); }
+  .rank-B-glow { box-shadow: 0 0 0 3px rgba(180,83,9,0.18), 0 4px 20px rgba(0,0,0,0.10); }
+  .rank-C-glow { box-shadow: 0 0 0 3px rgba(153,27,27,0.22), 0 4px 20px rgba(0,0,0,0.10); }
+
+  .radio-option { transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s; }
+  .radio-option:hover { box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .radio-option.selected { box-shadow: inset 0 0 0 1.5px #991b1b; }
+
+  .cta-btn {
+    background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+    transition: filter 0.15s, transform 0.12s;
+  }
+  .cta-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .cta-btn:active { transform: translateY(0); filter: brightness(0.97); }
+
+  .download-btn {
+    background: linear-gradient(135deg, #7c2d12 0%, #991b1b 50%, #b91c1c 100%);
+    transition: filter 0.15s, transform 0.12s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px rgba(153,27,27,0.30);
+  }
+  .download-btn:hover { filter: brightness(1.07); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(153,27,27,0.38); }
+  .download-btn:active { transform: translateY(0); }
+
+  .divider-ornament {
+    display: flex; align-items: center; gap: 10px; margin: 10px 0;
+  }
+  .divider-ornament::before, .divider-ornament::after {
+    content: ''; flex: 1; height: 1px; background: #e7e5e4;
+  }
+
+  /* mobile touch targets */
+  @media (max-width: 640px) {
+    .radio-option { min-height: 52px; }
+    select, input[type="text"] { min-height: 48px; }
+    .download-btn { min-height: 52px; font-size: 15px; }
+  }
+
+  .badge-new {
+    display: inline-flex; align-items: center;
+    background: #fef3c7; border: 1px solid #fbbf24; color: #92400e;
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 2px;
+    letter-spacing: 0.04em; vertical-align: middle; margin-left: 4px;
+  }
+
+  .sticky-result { position: sticky; top: 16px; }
+
+  .score-total-ring {
+    width: 88px; height: 88px; flex-shrink: 0;
+    border-radius: 50%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border: 3px solid;
+  }
+
+  .tag-pill {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .fieldset-header {
+    padding: 12px 16px; border-bottom: 1px solid #e7e5e4;
+    background: linear-gradient(to right, #fafaf9, #f5f4f2);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  @media (min-width: 1024px) {
+    .form-col { max-height: calc(100vh - 32px); overflow-y: auto; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useRef, useEffect } = React;
+
+/* ── SVGアイコン ── */
+const Icon = ({ d, size = 18, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    className={className} dangerouslySetInnerHTML={{ __html: d }} />
+);
+const ChevronRight = (p) => <Icon d='<path d="m9 18 6-6-6-6"/>' {...p} />;
+const Download = (p) => <Icon d='<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>' {...p} />;
+const FileText = (p) => <Icon d='<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>' {...p} />;
+const AlertCircle = (p) => <Icon d='<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' {...p} />;
+const CheckCircle2 = (p) => <Icon d='<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' {...p} />;
+const XCircle = (p) => <Icon d='<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' {...p} />;
+const ScrollText = (p) => <Icon d='<path d="M15 8h-7"/><path d="M15 12h-7"/><path d="M8 16H5a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v3"/><path d="M9 16v3a3 3 0 0 1-6 0v-3z"/><path d="M21 8v9a3 3 0 0 1-3 3H9"/>' {...p} />;
+const Stamp = (p) => <Icon d='<path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13"/>' {...p} />;
+const Briefcase = (p) => <Icon d='<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>' {...p} />;
+const Languages = (p) => <Icon d='<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>' {...p} />;
+const Award = (p) => <Icon d='<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>' {...p} />;
+const ShieldCheck = (p) => <Icon d='<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>' {...p} />;
+const Building = (p) => <Icon d='<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>' {...p} />;
+const HeartHandshake = (p) => <Icon d='<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08v0c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/>' {...p} />;
+const Phone = (p) => <Icon d='<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>' {...p} />;
+const Mail = (p) => <Icon d='<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>' {...p} />;
+const CheckSquare = (p) => <Icon d='<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' {...p} />;
+const TrendingUp = (p) => <Icon d='<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>' {...p} />;
+
+/* ========================================================================
+   要件マトリクス（不変）
+   ======================================================================== */
+const REQUIREMENTS = {
+  version: "2026.05",
+  last_updated: "2026-05-24",
+  tokutei1: {
+    name: "特定技能1号",
+    visa_code: "tokutei1",
+    legal_basis: [
+      { law: "出入国管理及び難民認定法", article: "別表第一の二の表",
+        summary: "法務省令で定める産業上の分野に属する相当程度の知識又は経験を必要とする技能を要する業務に従事する活動" },
+      { law: "特定技能の在留資格に係る制度の運用に関する基本方針", article: "閣議決定（2024年3月29日改正）",
+        summary: "対象分野を従来の12分野から、自動車運送業・鉄道・林業・木材産業の4分野を追加し全16分野に拡大" },
+    ],
+    pass_lines: { green: 80, yellow: 60 },
+    total_max: 110,
+    industry: {
+      axis_name: "対象分野",
+      max_score: 40,
+      required: true,
+      eligible_industries: [
+        { key: "kaigo",          label: "介護",                                            score: 40, since: "original", featured: true },
+        { key: "building",       label: "ビルクリーニング",                                score: 40, since: "original" },
+        { key: "material",       label: "工業製品製造業（旧：素形材・産業機械・電気電子）", score: 40, since: "original" },
+        { key: "construction",   label: "建設",                                            score: 40, since: "original" },
+        { key: "shipbuilding",   label: "造船・舶用工業",                                  score: 40, since: "original" },
+        { key: "auto",           label: "自動車整備",                                      score: 40, since: "original" },
+        { key: "aviation",       label: "航空",                                            score: 40, since: "original" },
+        { key: "lodging",        label: "宿泊",                                            score: 40, since: "original" },
+        { key: "agriculture",    label: "農業",                                            score: 40, since: "original" },
+        { key: "fishery",        label: "漁業",                                            score: 40, since: "original" },
+        { key: "food_mfg",       label: "飲食料品製造業",                                  score: 40, since: "original" },
+        { key: "restaurant",     label: "外食業",                                          score: 40, since: "original" },
+        { key: "auto_transport", label: "自動車運送業",                                    score: 40, since: "2024-03" },
+        { key: "railway",        label: "鉄道",                                            score: 40, since: "2024-03" },
+        { key: "forestry",       label: "林業",                                            score: 40, since: "2024-03" },
+        { key: "wood",           label: "木材産業",                                        score: 40, since: "2024-03" },
+      ],
+      ineligible: {
+        key: "not_applicable",
+        label: "上記以外の業種",
+        score: 0,
+        instant_fail: true,
+        note: "特定技能1号の対象外業種です。技術・人文知識・国際業務（技人国）等の別在留資格をご検討ください。",
+      },
+    },
+    skill_requirement: {
+      axis_name: "技能評価試験",
+      max_score: 20,
+      options: [
+        { key: "passed",        label: "各分野の技能評価試験に合格",                          score: 20, note: "分野別の技能試験（介護技能評価試験・建設特定技能評価試験など）" },
+        { key: "jisshu_2",      label: "技能実習2号修了（同一分野・職種）",                   score: 20, exempts: true, note: "試験免除扱い。技能実習2号良好修了証明書が必要" },
+        { key: "jisshu_2_diff", label: "技能実習2号修了（異分野）",                           score: 10, note: "試験免除にはならない。当該分野の技能試験受験が必要" },
+        { key: "not_passed",    label: "未受験・不合格",                                      score: 0,  note: "試験合格が要件。受験計画の策定が必要" },
+      ],
+    },
+    japanese_ability: {
+      axis_name: "日本語能力",
+      max_score: 20,
+      options: [
+        { key: "jlpt_n4_plus",    label: "JLPT N4以上に合格",                                 score: 20, note: "N3・N2・N1はより高評価ですが点数は同じ" },
+        { key: "jft_basic",       label: "JFT-Basic（国際交流基金日本語基礎テスト）合格",      score: 20, note: "JLPT N4と同等" },
+        { key: "jisshu_2_exempt", label: "技能実習2号修了（日本語試験も免除）",               score: 20, exempts: true, note: "技能実習2号良好修了者は日本語試験も免除" },
+        { key: "not_qualified",   label: "いずれも未取得",                                    score: 0,  note: "JLPT N4以上の受験が必要" },
+      ],
+      kaigo_bonus: {
+        key: "kaigo_bonus",
+        label: "介護日本語評価試験に合格（介護分野のみ加算）",
+        score: 5,
+        note: "介護分野のみの加算項目。介護分野の場合は実質必須。",
+      },
+    },
+    residence_status: {
+      axis_name: "在留状況・前歴",
+      max_score: 20,
+      options: [
+        { key: "clean",       label: "適法在留中（問題なし）",     score: 20, note: "現在の在留資格で適法に在留中" },
+        { key: "minor_issue", label: "軽微な前歴あり",             score: 10, note: "短期超過等の軽微な問題。個別判断が必要" },
+        { key: "overstay",    label: "不法残留・退去強制歴あり",   score: 0,  note: "許可困難。再入国規制の確認が必要" },
+        { key: "criminal",    label: "刑事前科・退去強制歴あり",   score: 0,  note: "原則不許可。詳細確認が必須" },
+      ],
+    },
+    employer_status: {
+      axis_name: "特定技能所属機関（受入機関）",
+      max_score: 10,
+      options: [
+        { key: "registered",     label: "登録済み特定技能所属機関",  score: 10, note: "分野別協議会への加入も確認が必要" },
+        { key: "applying",       label: "登録申請中",               score: 5,  note: "在留申請は可能。追完資料として提出" },
+        { key: "not_registered", label: "未登録（これから登録）",    score: 0,  note: "所属機関の登録が申請要件。並行手続きが必要" },
+      ],
+    },
+    ranks: {
+      A: "適格（スコア80点以上）。要件をしっかり満たしており、書類整備のうえ申請に進める案件です。",
+      B: "条件付き適格（スコア60〜79点）。基本要件は概ね満たしていますが、不足要件の補完が必要です。",
+      C: "要慎重検討（スコア60点未満）。要件充足度が低く、現状での申請はリスクが高い案件です。",
+    },
+  },
+};
+
+/* ── ランクスタイル ── */
+const RANK_STYLES = {
+  A: {
+    bg: "bg-emerald-50", border: "border-emerald-700", text: "text-emerald-800",
+    badge: "bg-emerald-700", badgeLight: "bg-emerald-100", textDark: "text-emerald-900",
+    glow: "rank-A-glow", ringColor: "#047857", icon: CheckCircle2, label: "適 格",
+    labelFull: "適格", desc: "申請推進", barColor: "#047857",
+  },
+  B: {
+    bg: "bg-amber-50", border: "border-amber-700", text: "text-amber-800",
+    badge: "bg-amber-700", badgeLight: "bg-amber-100", textDark: "text-amber-900",
+    glow: "rank-B-glow", ringColor: "#b45309", icon: AlertCircle, label: "条件付き適格",
+    labelFull: "条件付き適格", desc: "補完要", barColor: "#b45309",
+  },
+  C: {
+    bg: "bg-red-50", border: "border-red-800", text: "text-red-800",
+    badge: "bg-red-800", badgeLight: "bg-red-100", textDark: "text-red-900",
+    glow: "rank-C-glow", ringColor: "#991b1b", icon: XCircle, label: "要慎重検討",
+    labelFull: "要慎重検討", desc: "要件不足", barColor: "#991b1b",
+  },
+};
+
+/* ── 判定エンジン（不変） ── */
+function findOption(options, key) {
+  return options.find(o => o.key === key);
+}
+
+function judgeTokutei1(input) {
+  const t = REQUIREMENTS.tokutei1;
+  const breakdown = [], deficiencies = [], recommendations = [];
+  let total = 0, instantFail = false, instantFailReason = "";
+
+  const indTable = t.industry;
+  const indOpt = findOption(indTable.eligible_industries, input.industryKey);
+  if (indOpt) {
+    breakdown.push({ axis: indTable.axis_name, label: indOpt.label, score: indOpt.score, max: indTable.max_score, note: "" });
+    total += indOpt.score;
+  } else {
+    breakdown.push({ axis: indTable.axis_name, label: indTable.ineligible.label, score: 0, max: indTable.max_score, note: indTable.ineligible.note });
+    instantFail = true;
+    instantFailReason = "対象分野外のため特定技能1号での申請は不可です";
+    deficiencies.push("対象分野（16分野）に該当しません");
+    recommendations.push("特定技能1号は16分野に限定されています。技人国・技能・特定活動等の別在留資格をご検討ください。");
+    ["skill_requirement","japanese_ability","residence_status","employer_status"].forEach(key => {
+      const ax = t[key];
+      breakdown.push({ axis: ax.axis_name, label: "（業種不適格のため評価対象外）", score: 0, max: ax.max_score, note: "" });
+    });
+    return { visaType: t.name, totalScore: 0, maxScore: t.total_max, scoreRate: 0, rank: "C", breakdown, deficiencies, recommendations, instantFail, instantFailReason };
+  }
+
+  const skillTable = t.skill_requirement;
+  const skillOpt = findOption(skillTable.options, input.skillKey);
+  if (skillOpt) {
+    breakdown.push({ axis: skillTable.axis_name, label: skillOpt.label, score: skillOpt.score, max: skillTable.max_score, note: skillOpt.note || "" });
+    total += skillOpt.score;
+    if (skillOpt.score === 0) {
+      deficiencies.push("技能評価試験に合格していません");
+      recommendations.push("各分野の技能評価試験の受験・合格が必要です。技能実習2号良好修了（同一分野）の場合は試験免除となります。");
+    } else if (skillOpt.score === 10) {
+      recommendations.push("技能実習2号は修了済みですが分野が異なるため、当該分野の技能評価試験を受験する必要があります。");
+    }
+  }
+
+  const jpTable = t.japanese_ability;
+  const jpOpt = findOption(jpTable.options, input.japaneseKey);
+  if (jpOpt) {
+    breakdown.push({ axis: jpTable.axis_name, label: jpOpt.label, score: jpOpt.score, max: jpTable.max_score, note: jpOpt.note || "" });
+    total += jpOpt.score;
+    if (jpOpt.score === 0) {
+      deficiencies.push("日本語能力要件を満たしていません");
+      recommendations.push("JLPT N4以上またはJFT-Basicの合格が必要です。技能実習2号良好修了者は日本語試験も免除されます。");
+    }
+  }
+
+  if (input.industryKey === "kaigo" && input.kaigoJapaneseBonus) {
+    const bonus = jpTable.kaigo_bonus;
+    breakdown.push({ axis: "介護日本語評価試験（加算）", label: bonus.label, score: bonus.score, max: bonus.score, note: bonus.note, isBonus: true });
+    total += bonus.score;
+  } else if (input.industryKey === "kaigo" && !input.kaigoJapaneseBonus) {
+    recommendations.push("介護分野では、JLPT・JFT-Basicに加えて「介護日本語評価試験」の合格が事実上必須となります（介護現場での日常会話・記録対応のため）。");
+  }
+
+  const resTable = t.residence_status;
+  const resOpt = findOption(resTable.options, input.residenceKey);
+  if (resOpt) {
+    breakdown.push({ axis: resTable.axis_name, label: resOpt.label, score: resOpt.score, max: resTable.max_score, note: resOpt.note || "" });
+    total += resOpt.score;
+    if (resOpt.score === 0) {
+      deficiencies.push("在留状況・前歴に重大な問題があります");
+      recommendations.push("不法残留歴・退去強制歴・刑事前科がある場合は許可が困難です。詳細確認のうえ弁明書等の検討が必要です。");
+    } else if (resOpt.score === 10) {
+      recommendations.push("前歴に軽微な問題があります。経緯を丁寧に説明した申立書の作成を推奨します。");
+    }
+  }
+
+  const empTable = t.employer_status;
+  const empOpt = findOption(empTable.options, input.employerKey);
+  if (empOpt) {
+    breakdown.push({ axis: empTable.axis_name, label: empOpt.label, score: empOpt.score, max: empTable.max_score, note: empOpt.note || "" });
+    total += empOpt.score;
+    if (empOpt.score === 0) {
+      deficiencies.push("特定技能所属機関（受入機関）の登録が完了していません");
+      recommendations.push("受入機関の特定技能所属機関登録と、該当分野の協議会加入が申請の前提条件です。");
+    } else if (empOpt.score === 5) {
+      recommendations.push("所属機関登録が申請中です。登録証明書の取得後、追完資料として提出してください。");
+    }
+  }
+
+  let rank;
+  if (total >= t.pass_lines.green) rank = "A";
+  else if (total >= t.pass_lines.yellow) rank = "B";
+  else rank = "C";
+
+  return { visaType: t.name, totalScore: total, maxScore: t.total_max, scoreRate: total / t.total_max, rank, breakdown, deficiencies, recommendations, instantFail: false, instantFailReason: "" };
+}
+
+/* ── Wordレポート生成（不変） ── */
+function generateWordReport(input, result, clientName, candidateName) {
+  const t = REQUIREMENTS.tokutei1;
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  const industryLabel = result.breakdown[0].label;
+  const rankStyle = RANK_STYLES[result.rank];
+  const breakdownRows = result.breakdown.map(b => `
+    <tr>
+      <td style="border:1px solid #999; padding:6px;">${b.axis}</td>
+      <td style="border:1px solid #999; padding:6px;">${b.label}</td>
+      <td style="border:1px solid #999; padding:6px; text-align:right;">${b.score} / ${b.max}点</td>
+    </tr>`).join("");
+  const deficienciesHtml = result.deficiencies.length > 0
+    ? `<h3 style="color:#991b1b; font-family:'Shippori Mincho',serif;">不足要件</h3><ul>${result.deficiencies.map(d=>`<li>${d}</li>`).join("")}</ul>` : "";
+  const recommendationsHtml = result.recommendations.length > 0
+    ? `<h3 style="color:#991b1b; font-family:'Shippori Mincho',serif;">補完アドバイス</h3><ol>${result.recommendations.map(r=>`<li>${r}</li>`).join("")}</ol>` : "";
+  const legalHtml = t.legal_basis.map(l=>`<li><strong>${l.law}</strong>（${l.article}）：${l.summary}</li>`).join("");
+  const html = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8" /><title>特定技能1号 簡易診断レポート</title></head>
+<body style="font-family:'游明朝','Yu Mincho',serif; padding:40px; color:#1c1917;">
+  <div style="text-align:center; border-bottom:2px solid #991b1b; padding-bottom:20px; margin-bottom:30px;">
+    <h1 style="font-family:'Shippori Mincho',serif; color:#991b1b; margin:0;">特定技能1号 在留資格 適合性 簡易診断レポート</h1>
+    <p style="margin:8px 0 0 0; color:#57534e;">作成日：${dateStr}</p>
+  </div>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:25px;">
+    <tr><td style="border:1px solid #999; padding:8px; background:#fafaf9; width:30%; font-weight:bold;">クライアント企業</td><td style="border:1px solid #999; padding:8px;">${clientName || "（未記入）"}</td></tr>
+    <tr><td style="border:1px solid #999; padding:8px; background:#fafaf9; font-weight:bold;">対象者氏名</td><td style="border:1px solid #999; padding:8px;">${candidateName || "（未記入）"}</td></tr>
+    <tr><td style="border:1px solid #999; padding:8px; background:#fafaf9; font-weight:bold;">対象分野</td><td style="border:1px solid #999; padding:8px;">${industryLabel}</td></tr>
+  </table>
+  <h2 style="font-family:'Shippori Mincho',serif; color:#991b1b; border-left:5px solid #991b1b; padding-left:12px;">判定結果</h2>
+  <div style="background:#fafaf9; border:2px solid #991b1b; padding:20px; margin-bottom:25px;">
+    <p style="margin:0; font-size:20px; font-family:'Shippori Mincho',serif; font-weight:bold;">
+      判定：<span style="color:${result.rank==='A'?'#065f46':result.rank==='B'?'#92400e':'#991b1b'};">${rankStyle.labelFull}</span>
+    </p>
+    <p style="margin:8px 0 0 0; font-size:14px;">総合スコア：${result.totalScore} / ${result.maxScore}点（${(result.scoreRate*100).toFixed(1)}%）</p>
+    <p style="margin:8px 0 0 0; font-size:13px; color:#44403c;">${t.ranks[result.rank]}</p>
+    ${result.instantFail?`<p style="margin:12px 0 0 0; color:#991b1b; font-weight:bold;">⚠ ${result.instantFailReason}</p>`:""}
+  </div>
+  <h2 style="font-family:'Shippori Mincho',serif; color:#991b1b; border-left:5px solid #991b1b; padding-left:12px;">スコア内訳</h2>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:13px;">
+    <tr style="background:#fafaf9;">
+      <th style="border:1px solid #999; padding:6px; text-align:left;">評価軸</th>
+      <th style="border:1px solid #999; padding:6px; text-align:left;">選択内容</th>
+      <th style="border:1px solid #999; padding:6px; text-align:right;">スコア</th>
+    </tr>
+    ${breakdownRows}
+  </table>
+  ${deficienciesHtml}
+  ${recommendationsHtml}
+  <h2 style="font-family:'Shippori Mincho',serif; color:#991b1b; border-left:5px solid #991b1b; padding-left:12px; margin-top:30px;">法的根拠</h2>
+  <ul style="font-size:12px; color:#44403c;">${legalHtml}</ul>
+  <div style="margin-top:40px; padding:15px; background:#fef3c7; border:1px solid #fcd34d; font-size:11px;">
+    <strong>本診断について：</strong>本診断は、入力情報をもとに出入国在留管理庁公表の最新基準に照らして特定技能1号の適合性を機械的に評価した参考情報です。最終的な許否判断は出入国在留管理局の審査によります。個別案件の正式な見解は、必ず行政書士にご相談ください。<br /><br />
+    個人情報・企業情報は行政書士法第12条（守秘義務）に基づき厳重に管理されます。
+  </div>
+  <div style="margin-top:50px; padding-top:20px; border-top:2px solid #991b1b; text-align:center;">
+    <p style="font-family:'Shippori Mincho',serif; font-size:16px; font-weight:bold; margin:0;">行政書士 吉岡康生事務所</p>
+    <p style="font-size:12px; margin:6px 0 0 0; color:#57534e;">登録番号 第25306704号 ／ 兵庫県行政書士会阪神支部 ／ 申請取次行政書士</p>
+    <p style="font-size:12px; margin:6px 0 0 0; color:#57534e;">TEL：072-741-6693 ／ Email：yasuo@yoshioka-gyosei.jp ／ 平日9:00〜18:00（土日祝休）</p>
+    <p style="font-size:10px; margin:10px 0 0 0; color:#a8a29e;">判定エンジン v${REQUIREMENTS.version} ／ 最終更新 ${REQUIREMENTS.last_updated}</p>
+  </div>
+</body>
+</html>`;
+  const blob = new Blob([html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const dateForFile = today.toISOString().slice(0,10).replace(/-/g,"");
+  const name = (candidateName || "対象者").replace(/[\\/:*?"<>|\s]/g,"_");
+  a.download = `特定技能1号診断_${name}_${dateForFile}.doc`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ========================================================================
+   UI コンポーネント
+   ======================================================================== */
+const FieldLabel = ({ children, required = false }) => (
+  <label className="block text-xs font-bold text-stone-600 mb-1.5 tracking-widest uppercase">
+    {children}
+    {required && <span className="text-red-800 ml-1 normal-case tracking-normal">*必須</span>}
+  </label>
+);
+
+const SelectInput = ({ value, onChange, options }) => (
+  <div className="relative">
+    <select value={value} onChange={onChange}
+      className="w-full px-4 py-3 text-sm bg-white border border-stone-300 rounded appearance-none
+                 focus:outline-none focus:ring-2 focus:ring-red-800/40 focus:border-red-800
+                 font-medium text-stone-900 cursor-pointer transition-colors pr-10"
+      style={{ minHeight: 48 }}>
+      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
+    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-stone-400">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+);
+
+const TextInput = ({ value, onChange, placeholder = "" }) => (
+  <input type="text" value={value} onChange={onChange} placeholder={placeholder}
+    className="w-full px-3 py-2.5 text-sm bg-white border border-stone-300 rounded
+               focus:outline-none focus:ring-2 focus:ring-red-800/40 focus:border-red-800
+               font-medium text-stone-900 transition-colors placeholder-stone-400"
+    style={{ minHeight: 44 }} />
+);
+
+const RadioGroup = ({ name, value, onChange, options }) => (
+  <div className="space-y-2">
+    {options.map(o => (
+      <label key={o.value}
+        className={`radio-option flex items-start gap-3 px-3 py-3 border rounded cursor-pointer
+                    ${value === o.value
+                      ? "border-red-700 bg-red-50 selected"
+                      : "border-stone-200 bg-white hover:bg-stone-50 hover:border-stone-300"}`}
+        style={{ minHeight: 52 }}>
+        <div className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+          style={{ borderColor: value === o.value ? '#991b1b' : '#d6d3d1', marginTop: 2 }}>
+          {value === o.value && <div className="w-2.5 h-2.5 rounded-full bg-red-800" />}
+        </div>
+        <input type="radio" name={name} value={o.value} checked={value === o.value}
+          onChange={onChange} className="sr-only" />
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-semibold text-stone-900 leading-snug">{o.label}</div>
+          {o.note && <div className="text-[11px] text-stone-500 mt-0.5 leading-relaxed">{o.note}</div>}
+        </div>
+        {value === o.value && (
+          <div className="flex-shrink-0 mt-0.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#991b1b" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        )}
+      </label>
+    ))}
+  </div>
+);
+
+const CheckboxField = ({ checked, onChange, label, note }) => (
+  <label className={`radio-option flex items-start gap-3 px-3 py-3 border rounded cursor-pointer transition-all
+                     ${checked ? "border-amber-600 bg-amber-50 selected" : "border-stone-200 bg-white hover:bg-stone-50"}`}
+    style={{ minHeight: 52 }}>
+    <div className="flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all mt-0.5"
+      style={{ borderColor: checked ? '#d97706' : '#d6d3d1', background: checked ? '#d97706' : 'white', marginTop: 2 }}>
+      {checked && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+    </div>
+    <input type="checkbox" checked={checked} onChange={onChange} className="sr-only" />
+    <div className="flex-1 min-w-0">
+      <div className="text-sm font-semibold text-stone-900 leading-snug">{label}</div>
+      {note && <div className="text-[11px] text-stone-500 mt-0.5 leading-relaxed">{note}</div>}
+    </div>
+    {checked && <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full flex-shrink-0 self-start mt-0.5">+5点</span>}
+  </label>
+);
+
+/* スコアバー（改良版） */
+const ScoreBar = ({ score, max, animated = false }) => {
+  const pct = Math.min(100, (score / max) * 100);
+  const getColor = () => {
+    if (pct === 0) return '#e7e5e4';
+    if (pct >= 100) return '#047857';
+    if (pct >= 60) return '#d97706';
+    return '#991b1b';
+  };
+  return (
+    <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
+      <div className={animated ? "bar-animate" : ""}
+        style={{
+          height: '100%', width: `${pct}%`,
+          background: `linear-gradient(90deg, ${getColor()}cc, ${getColor()})`,
+          borderRadius: '9999px',
+          transition: 'width 0.6s cubic-bezier(0.4,0,0.2,1)',
+          boxShadow: pct > 0 ? `0 0 6px ${getColor()}44` : 'none',
+        }} />
+    </div>
+  );
+};
+
+/* ── セクションヘッダー ── */
+const SectionHeader = ({ icon, title, badge }) => (
+  <div className="fieldset-header">
+    <div className="flex-shrink-0 w-7 h-7 rounded flex items-center justify-center bg-red-800/10">
+      {React.cloneElement(icon, { size: 15, className: "text-red-800" })}
+    </div>
+    <h2 className="font-mincho text-sm font-bold text-stone-900 tracking-wide flex-1">{title}</h2>
+    {badge && <span className="text-[10px] text-red-800 font-bold tracking-wider bg-red-50 border border-red-200 px-2 py-0.5 rounded">{badge}</span>}
+  </div>
+);
+
+/* ── ランクリング ── */
+const RankRing = ({ rank, score, max }) => {
+  const style = RANK_STYLES[rank];
+  const RankIcon = style.icon;
+  const pct = max > 0 ? Math.min(100, (score / max) * 100) : 0;
+  const circumference = 2 * Math.PI * 38;
+  const dashOffset = circumference * (1 - pct / 100);
+  return (
+    <div className="relative flex-shrink-0" style={{ width: 96, height: 96 }}>
+      <svg width="96" height="96" viewBox="0 0 96 96" style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx="48" cy="48" r="38" fill="none" stroke="#e7e5e4" strokeWidth="5" />
+        <circle cx="48" cy="48" r="38" fill="none" stroke={style.ringColor} strokeWidth="5"
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          strokeLinecap="round"
+          style={{ transition: 'stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)' }} />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <RankIcon size={22} style={{ color: style.ringColor }} />
+      </div>
+    </div>
+  );
+};
+
+/* ========================================================================
+   メインApp
+   ======================================================================== */
+function App() {
+  const [input, setInput] = useState({
+    industryKey: "kaigo",
+    skillKey: "passed",
+    japaneseKey: "jlpt_n4_plus",
+    kaigoJapaneseBonus: false,
+    residenceKey: "clean",
+    employerKey: "registered",
+  });
+  const [clientName, setClientName] = useState("");
+  const [candidateName, setCandidateName] = useState("");
+  const [resultKey, setResultKey] = useState(0);
+
+  const update = (key, value) => {
+    setInput(prev => ({ ...prev, [key]: value }));
+    setResultKey(k => k + 1);
+  };
+
+  const result = useMemo(() => judgeTokutei1(input), [input]);
+  const t = REQUIREMENTS.tokutei1;
+  const rankStyle = RANK_STYLES[result.rank];
+
+  const industryOptions = [
+    ...t.industry.eligible_industries.map(i => ({
+      value: i.key,
+      label: `${i.label}${i.since === "2024-03" ? "（2024年追加）" : ""}${i.featured ? " ★介護施設の方はこちら" : ""}`,
+    })),
+    { value: "not_applicable", label: "── 上記以外の業種 ──" },
+  ];
+
+  return (
+    <div className="min-h-screen" style={{ background: '#f5f3f0' }}>
+
+      {/* ────────────────────────────────────────
+          ヘッダー
+      ──────────────────────────────────────── */}
+      <header style={{ background: '#1c1917', borderBottom: '3px solid #991b1b' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center rounded" style={{ background: 'rgba(153,27,27,0.25)', border: '1px solid rgba(153,27,27,0.5)' }}>
+              <Stamp size={20} className="text-red-400" />
+            </div>
+            <div>
+              <div className="font-mincho text-lg sm:text-xl font-bold text-white leading-tight tracking-wide">
+                特定技能 簡易診断
+              </div>
+              <div className="text-[10px] text-stone-400 tracking-widest mt-0.5">SPECIFIED SKILLED WORKER ELIGIBILITY CHECKER</div>
+            </div>
+          </div>
+          <a href="gijinkoku_simulator.html"
+             className="text-[11px] sm:text-xs text-red-300 hover:text-red-200 hover:underline tracking-wide whitespace-nowrap">
+            → 技人国・高度専門職をお探しの方はこちら
+          </a>
+        </div>
+      </header>
+
+      {/* ────────────────────────────────────────
+          ヒーローバナー（介護訴求）
+      ──────────────────────────────────────── */}
+      <section className="hero-pattern" style={{ background: 'linear-gradient(135deg, #1c1917 0%, #44403c 45%, #6b3430 100%)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8">
+            {/* 左：テキスト */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="tag-pill" style={{ background: 'rgba(153,27,27,0.85)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.4)' }}>
+                  <HeartHandshake size={11} />
+                  介護施設経営者の方へ
+                </span>
+                <span className="tag-pill" style={{ background: 'rgba(255,255,255,0.1)', color: '#d6d3d1', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  全16分野対応
+                </span>
+              </div>
+              <h1 className="font-mincho text-xl sm:text-2xl font-bold text-white leading-snug mb-3" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+                外国人特定技能人材の受入可否を<br className="hidden sm:block" />
+                <span style={{ color: '#fca5a5' }}>5項目の選択</span>で即時診断
+              </h1>
+              <p className="text-sm text-stone-300 leading-relaxed max-w-xl">
+                深刻な人材不足に悩む介護・建設・飲食業等の経営者に向けた無料診断ツールです。
+                2024年3月に追加された4分野を含む<strong className="text-white">全16分野</strong>に対応し、
+                診断結果はそのままWord書類としてご利用いただけます。
+              </p>
+              <div className="flex flex-wrap items-center gap-3 mt-4">
+                <div className="flex items-center gap-1.5 text-xs text-stone-400">
+                  <CheckSquare size={13} className="text-emerald-400" />
+                  介護デフォルト設定済み
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-stone-400">
+                  <CheckSquare size={13} className="text-emerald-400" />
+                  申請取次行政書士が監修
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-stone-400">
+                  <CheckSquare size={13} className="text-emerald-400" />
+                  守秘義務（法第12条）厳守
+                </div>
+              </div>
+            </div>
+            {/* 右：ステータスカード */}
+            <div className="flex-shrink-0 w-full sm:w-auto">
+              <div className="rounded-lg p-4 sm:p-5 sm:min-w-[220px]" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}>
+                <div className="text-[10px] text-stone-400 tracking-widest mb-3 font-bold">COVERAGE</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { n: "16", label: "対応分野数", sub: "2024年3月時点" },
+                    { n: "5", label: "診断軸", sub: "業種・試験・語学ほか" },
+                    { n: "110", label: "満点スコア", sub: "加算ボーナス込み" },
+                    { n: "即時", label: "診断速度", sub: "入力完了と同時" },
+                  ].map(item => (
+                    <div key={item.n} className="text-center px-2 py-2 rounded" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                      <div className="font-mincho text-xl font-bold text-white">{item.n}</div>
+                      <div className="text-[10px] text-stone-300 font-bold leading-tight">{item.label}</div>
+                      <div className="text-[9px] text-stone-500 leading-tight mt-0.5">{item.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ────────────────────────────────────────
+          メインコンテンツ
+      ──────────────────────────────────────── */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid lg:grid-cols-5 gap-5 sm:gap-6 items-start">
+
+          {/* ════════════════════════════════════
+              左カラム：入力フォーム
+          ════════════════════════════════════ */}
+          <div className="lg:col-span-3 space-y-4">
+
+            {/* ── 1. 対象分野 ── */}
+            <div className="section-card overflow-hidden">
+              <SectionHeader icon={<Building />} title="対象分野" badge="必須・即時不適格判定" />
+              <div className="p-4 sm:p-5">
+                {input.industryKey === "kaigo" && (
+                  <div className="mb-3 flex items-start gap-2.5 p-3 rounded" style={{ background: 'linear-gradient(135deg, #fff7f7, #fff1f1)', border: '1px solid #fecaca' }}>
+                    <HeartHandshake size={16} className="text-red-700 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-red-800 mb-0.5">介護分野が選択されています</div>
+                      <div className="text-[11px] text-red-700/80 leading-relaxed">介護施設での特定技能外国人受入れに最適化された診断を行います。介護日本語評価試験ボーナスが日本語能力欄に表示されます。</div>
+                    </div>
+                  </div>
+                )}
+                <FieldLabel required>外国人材を受け入れる業種</FieldLabel>
+                <SelectInput value={input.industryKey}
+                  onChange={e => update('industryKey', e.target.value)}
+                  options={industryOptions} />
+                <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1">
+                  <p className="text-[11px] text-stone-500 leading-relaxed">
+                    特定技能1号は16分野に限定。上記以外の業種は対象外です。
+                  </p>
+                  <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                    ※ 2027年に倉庫管理・リネンサプライ・資源循環の3分野追加予定（合計19分野へ）。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ── 2. 技能評価試験 ── */}
+            <div className="section-card overflow-hidden">
+              <SectionHeader icon={<Award />} title="技能評価試験" />
+              <div className="p-4 sm:p-5">
+                <RadioGroup name="skill" value={input.skillKey}
+                  onChange={e => update('skillKey', e.target.value)}
+                  options={t.skill_requirement.options.map(o => ({ value: o.key, label: o.label, note: o.note }))} />
+              </div>
+            </div>
+
+            {/* ── 3. 日本語能力 ── */}
+            <div className="section-card overflow-hidden">
+              <SectionHeader icon={<Languages />} title="日本語能力" />
+              <div className="p-4 sm:p-5 space-y-3">
+                <RadioGroup name="japanese" value={input.japaneseKey}
+                  onChange={e => update('japaneseKey', e.target.value)}
+                  options={t.japanese_ability.options.map(o => ({ value: o.key, label: o.label, note: o.note }))} />
+                {input.industryKey === "kaigo" && (
+                  <div className="pt-3 border-t border-stone-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="h-px flex-1 bg-amber-200" />
+                      <span className="text-[10px] font-bold text-amber-700 tracking-wider">介護分野限定ボーナス</span>
+                      <div className="h-px flex-1 bg-amber-200" />
+                    </div>
+                    <CheckboxField
+                      checked={input.kaigoJapaneseBonus}
+                      onChange={e => update('kaigoJapaneseBonus', e.target.checked)}
+                      label={t.japanese_ability.kaigo_bonus.label}
+                      note={t.japanese_ability.kaigo_bonus.note} />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ── 4. 在留状況 ── */}
+            <div className="section-card overflow-hidden">
+              <SectionHeader icon={<ShieldCheck />} title="在留状況・前歴" />
+              <div className="p-4 sm:p-5">
+                <RadioGroup name="residence" value={input.residenceKey}
+                  onChange={e => update('residenceKey', e.target.value)}
+                  options={t.residence_status.options.map(o => ({ value: o.key, label: o.label, note: o.note }))} />
+              </div>
+            </div>
+
+            {/* ── 5. 所属機関 ── */}
+            <div className="section-card overflow-hidden">
+              <SectionHeader icon={<Briefcase />} title="特定技能所属機関(受入機関)" />
+              <div className="p-4 sm:p-5">
+                <RadioGroup name="employer" value={input.employerKey}
+                  onChange={e => update('employerKey', e.target.value)}
+                  options={t.employer_status.options.map(o => ({ value: o.key, label: o.label, note: o.note }))} />
+              </div>
+            </div>
+          </div>
+
+          {/* ════════════════════════════════════
+              右カラム：診断結果
+          ════════════════════════════════════ */}
+          <div className="lg:col-span-2 space-y-4 sticky-result">
+
+            {/* ── 判定メインカード ── */}
+            <div key={resultKey} className={`section-card overflow-hidden fade-in ${rankStyle.glow}`}
+              style={{ border: `2px solid ${rankStyle.ringColor}22` }}>
+              {/* ヘッダーバー */}
+              <div className="px-4 sm:px-5 py-2.5 flex items-center gap-2"
+                style={{ background: rankStyle.ringColor, borderBottom: `1px solid ${rankStyle.ringColor}` }}>
+                <ScrollText size={13} className="text-white opacity-80" />
+                <span className="text-xs font-bold tracking-widest text-white/90">診断結果 ／ INSTANT VERDICT</span>
+              </div>
+
+              {/* スコアメイン */}
+              <div className="p-4 sm:p-5">
+                <div className="flex items-center gap-4 mb-4">
+                  <RankRing rank={result.rank} score={result.totalScore} max={result.maxScore} />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-mincho text-xs text-stone-500 tracking-wider mb-0.5">{result.visaType}</div>
+                    <div className="font-mincho text-xl sm:text-2xl font-bold leading-tight mb-1"
+                      style={{ color: rankStyle.ringColor }}>
+                      {rankStyle.label}
+                    </div>
+                    {!result.instantFail ? (
+                      <>
+                        <div className="text-sm font-bold text-stone-800">
+                          {result.totalScore} <span className="text-stone-400 font-normal text-xs">/ {result.maxScore}点</span>
+                        </div>
+                        <div className="mt-1.5">
+                          <div className="flex justify-between text-[10px] text-stone-500 mb-1">
+                            <span>充足率</span>
+                            <span className="font-bold" style={{ color: rankStyle.ringColor }}>{(result.scoreRate * 100).toFixed(1)}%</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: '#e7e5e4' }}>
+                            <div style={{
+                              height: '100%', width: `${(result.scoreRate * 100).toFixed(1)}%`,
+                              background: `linear-gradient(90deg, ${rankStyle.ringColor}99, ${rankStyle.ringColor})`,
+                              borderRadius: 9999,
+                              transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
+                              boxShadow: `0 0 8px ${rankStyle.ringColor}44`,
+                            }} />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-xs font-bold text-red-800 mt-1">即時不適格</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 合否ライン表示 */}
+                {!result.instantFail && (
+                  <div className="flex items-center gap-2 mb-3 text-[10px] text-stone-500">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-emerald-600" />
+                      <span>適格 80点〜</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-amber-600" />
+                      <span>条件付 60〜79点</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-red-800" />
+                      <span>要検討 〜59点</span>
+                    </div>
+                  </div>
+                )}
+
+                {result.instantFail && (
+                  <div className="bg-red-50 border border-red-300 rounded p-3 mb-3 text-xs text-red-900 leading-relaxed font-medium">
+                    ⚠ {result.instantFailReason}
+                  </div>
+                )}
+
+                {/* ランク説明 */}
+                <div className={`rounded p-3 text-xs leading-relaxed ${rankStyle.bg}`}
+                  style={{ border: `1px solid ${rankStyle.ringColor}30` }}>
+                  <div className="flex items-start gap-2">
+                    {React.createElement(rankStyle.icon, { size: 14, style: { color: rankStyle.ringColor, flexShrink: 0, marginTop: 1 } })}
+                    <p style={{ color: rankStyle.ringColor === '#047857' ? '#064e3b' : rankStyle.ringColor === '#b45309' ? '#78350f' : '#7f1d1d' }}>
+                      {t.ranks[result.rank]}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* スコア内訳 */}
+              {!result.instantFail && (
+                <div className="border-t border-stone-100 px-4 sm:px-5 py-4" style={{ background: '#fafaf9' }}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingUp size={12} className="text-stone-500" />
+                    <div className="text-[10px] font-bold text-stone-500 tracking-widest">スコア内訳</div>
+                  </div>
+                  <div className="space-y-3">
+                    {result.breakdown.map((b, i) => (
+                      <div key={i} className={b.isBonus ? "pl-3 border-l-2 border-amber-400" : ""}>
+                        <div className="flex items-baseline justify-between mb-1">
+                          <span className={`text-[11px] font-semibold truncate pr-2 ${b.isBonus ? "text-amber-700" : "text-stone-600"}`}>
+                            {b.isBonus && <span className="mr-1 text-amber-500">＋</span>}
+                            {b.axis}
+                          </span>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <span className="text-[11px] font-bold text-stone-900">{b.score}</span>
+                            <span className="text-[10px] text-stone-400">/ {b.max}</span>
+                            {b.score === b.max && b.max > 0 && (
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#047857" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            )}
+                          </div>
+                        </div>
+                        <ScoreBar score={b.score} max={b.max} animated />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ── 不足要件 ── */}
+            {result.deficiencies.length > 0 && (
+              <div className="section-card overflow-hidden fade-in" style={{ border: '1px solid #fecaca' }}>
+                <div className="px-4 py-2.5 border-b flex items-center gap-2" style={{ background: '#fff1f1', borderColor: '#fecaca' }}>
+                  <AlertCircle size={13} className="text-red-800" />
+                  <h3 className="text-xs font-bold text-red-900 tracking-widest">不足要件</h3>
+                  <span className="ml-auto text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">{result.deficiencies.length}項目</span>
+                </div>
+                <ul className="p-4 space-y-2">
+                  {result.deficiencies.map((d, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-xs text-stone-800 leading-relaxed">
+                      <div className="flex-shrink-0 w-4 h-4 rounded-full bg-red-100 flex items-center justify-center mt-0.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-700" />
+                      </div>
+                      <span>{d}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* ── 補完アドバイス ── */}
+            {result.recommendations.length > 0 && (
+              <div className="section-card overflow-hidden fade-in">
+                <div className="px-4 py-2.5 border-b border-stone-100 flex items-center gap-2" style={{ background: '#fafaf9' }}>
+                  <FileText size={13} className="text-red-800" />
+                  <h3 className="text-xs font-bold text-stone-600 tracking-widest">補完アドバイス</h3>
+                </div>
+                <ol className="p-4 space-y-2.5">
+                  {result.recommendations.map((r, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-xs text-stone-700 leading-relaxed">
+                      <span className="flex-shrink-0 w-5 h-5 rounded bg-stone-100 text-stone-600 font-bold text-[10px] flex items-center justify-center mt-0.5">{i+1}</span>
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {/* ── レポート出力 ── */}
+            <div className="section-card overflow-hidden">
+              <SectionHeader icon={<FileText />} title="診断レポート出力" />
+              <div className="p-4 sm:p-5">
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <FieldLabel>受入企業名</FieldLabel>
+                    <TextInput value={clientName} onChange={e => setClientName(e.target.value)} placeholder="株式会社○○" />
+                  </div>
+                  <div>
+                    <FieldLabel>対象者氏名</FieldLabel>
+                    <TextInput value={candidateName} onChange={e => setCandidateName(e.target.value)} placeholder="グエン・○○" />
+                  </div>
+                </div>
+                <button onClick={() => generateWordReport(input, result, clientName, candidateName)}
+                  className="download-btn w-full px-4 py-3.5 text-white font-bold text-sm
+                             rounded flex items-center justify-center gap-2 tracking-wide">
+                  <Download size={16} />
+                  Word形式でダウンロード（.doc）
+                </button>
+                <p className="text-[10px] text-stone-400 mt-2 leading-relaxed">
+                  ※ Microsoft Word互換形式。事務所名・登録番号・診断日が自動挿入されます。
+                </p>
+              </div>
+            </div>
+
+            {/* ── CTA ── */}
+            <div className="rounded overflow-hidden" style={{ background: 'linear-gradient(135deg, #1c1917 0%, #44403c 100%)', border: '1px solid #57534e' }}>
+              <div className="px-5 py-4">
+                <div className="text-[10px] text-stone-400 tracking-widest mb-1.5 font-bold">PROFESSIONAL CONSULTATION</div>
+                <div className="font-mincho text-base font-bold text-white mb-1 leading-snug">
+                  本格的なご相談は<br className="sm:hidden" />無料初回相談でどうぞ
+                </div>
+                <p className="text-[11px] text-stone-300 leading-relaxed mb-1">
+                  この診断はあくまで目安です。在留状況・雇用条件・協議会加入手続きなど、実務上の課題は個別にお確かめください。申請取次行政書士が直接対応します。
+                </p>
+                <p className="text-[11px] text-stone-400 leading-relaxed mb-4">
+                  電話受付：平日9:00〜18:00（土日祝休）
+                </p>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <a href="tel:072-741-6693"
+                    className="cta-btn flex items-center justify-center gap-2 px-4 py-3 rounded text-white text-xs font-bold tracking-wide"
+                    style={{ minHeight: 48, background: 'linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%)' }}>
+                    <Phone size={14} />
+                    電話相談 072-741-6693
+                  </a>
+                  <a href="mailto:yasuo@yoshioka-gyosei.jp?subject=%E7%89%B9%E5%AE%9A%E6%8A%80%E8%83%BD%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B&body=%E3%80%90%E3%81%8A%E5%90%8D%E5%89%8D%E3%80%91%0A%0A%E3%80%90%E3%81%94%E7%9B%B8%E8%AB%87%E5%86%85%E5%AE%B9%E3%80%91%0A%0A"
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded text-stone-200 text-xs font-bold tracking-wide transition-colors hover:bg-white/10"
+                    style={{ minHeight: 48, border: '1px solid rgba(255,255,255,0.2)' }}>
+                    <Mail size={14} />
+                    メールで問い合わせ
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* ── 注記 ── */}
+            <div className="rounded p-4 text-xs text-stone-700 leading-relaxed" style={{ background: '#fffbeb', border: '1px solid #fde68a' }}>
+              <div className="flex items-start gap-2">
+                <AlertCircle size={13} className="text-amber-700 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-bold mb-1 text-amber-800">本診断ツールについて</div>
+                  <p className="mb-1.5">本診断は、入力情報をもとに出入国在留管理庁公表の最新基準（2024年3月閣議決定の4分野追加を反映）に照らして特定技能1号の適合性を機械的に評価するものです。最終判断は出入国在留管理局の審査によります。</p>
+                  <p>個人情報・企業情報は行政書士法第12条（守秘義務）に基づき厳重に管理されます。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ────────────────────────────────────────
+            フッター
+        ──────────────────────────────────────── */}
+        <footer className="mt-12 sm:mt-16 pt-8 border-t-2 border-stone-300">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
+            <div className="text-center sm:text-left">
+              <div className="font-mincho text-lg font-bold text-stone-800 mb-1.5 flex items-center gap-2 justify-center sm:justify-start">
+                <Stamp size={18} className="text-red-800" />
+                行政書士 吉岡康生事務所
+              </div>
+              <div className="text-xs text-stone-500 leading-relaxed">
+                登録番号 第25306704号 ／ 兵庫県行政書士会阪神支部 ／ 申請取次行政書士
+              </div>
+              <div className="text-xs text-stone-500 leading-relaxed mt-1">
+                TEL：072-741-6693 ／ Email：yasuo@yoshioka-gyosei.jp ／ 平日9:00〜18:00（土日祝休）
+              </div>
+            </div>
+            <div className="text-center sm:text-right">
+              <div className="text-[10px] text-stone-400 leading-relaxed">
+                判定エンジン v{REQUIREMENTS.version} ／ 最終更新 {REQUIREMENTS.last_updated}
+              </div>
+              <div className="text-[10px] text-stone-400 mt-0.5">
+                © 行政書士 吉岡康生事務所 All rights reserved.
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 pt-5 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[10px] text-stone-400 leading-relaxed text-center sm:text-left max-w-lg">
+              本ツールは行政書士事務所が提供する情報提供サービスです。個別の在留資格申請に係るご依頼はお問い合わせください。
+              行政書士法第12条（守秘義務）に基づき、ご相談内容は厳重に管理いたします。
+            </p>
+            <a href="gijinkoku_simulator.html"
+               className="text-xs text-red-700 hover:text-red-900 hover:underline whitespace-nowrap">
+              ▶ 技人国・高度専門職 簡易診断はこちら
+            </a>
+          </div>
+        </footer>
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>

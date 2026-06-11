@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>リタイアメント資金 シミュレーター</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    background: #f8f5ef; color: #2c2c2c; line-height: 1.6;
+  }
+  .serif { font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif; }
+  .container { max-width: 920px; margin: 0 auto; padding: 20px; }
+
+  /* ヘッダー */
+  .header { background: #ffffff; border-left: 3px solid #b8973e; padding: 28px 32px; margin-bottom: 20px; }
+  .header .tag { font-size: 11px; letter-spacing: 0.3em; color: #b8973e; font-weight: 600; margin-bottom: 8px; }
+  .header h1 { font-family: 'Yu Mincho', serif; font-size: 26px; color: #1a2744; margin: 0; letter-spacing: 0.05em; }
+  .header p { font-size: 13px; color: #5a5a5a; margin: 12px 0 0 0; line-height: 1.8; }
+
+  /* プライバシー */
+  .privacy { padding: 10px 16px; margin-bottom: 20px; background: #f0ece4; border-left: 2px solid #5a7a4f; font-size: 11px; line-height: 1.7; display: flex; gap: 10px; }
+
+  /* セクション */
+  .section { background: #ffffff; padding: 24px 28px; margin-bottom: 20px; }
+  .section-title { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; font-weight: 600; letter-spacing: 0.1em; margin: 20px 0 14px 0; padding-left: 10px; border-left: 2px solid #b8973e; }
+  .section-title:first-child { margin-top: 0; }
+
+  /* スライダー */
+  .slider-row { margin-bottom: 14px; }
+  .slider-row .label-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .slider-row label { font-size: 11px; color: #5a5a5a; }
+  .slider-row .value { font-size: 13px; color: #1a2744; font-weight: 600; }
+  .slider-row input[type="range"] { width: 100%; -webkit-appearance: none; height: 4px; background: #e0d8cc; border-radius: 2px; outline: none; }
+  .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #b8973e; border-radius: 50%; cursor: pointer; }
+  .slider-row input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; background: #b8973e; border-radius: 50%; cursor: pointer; border: none; }
+
+  /* 前提条件 */
+  .summary-box { background: #ffffff; padding: 20px 24px; margin-bottom: 20px; border-left: 2px solid #b8973e; }
+  .summary-box h3 { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; font-weight: 600; margin: 0 0 12px 0; letter-spacing: 0.1em; }
+  .summary-box table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .summary-box td { padding: 6px 0; }
+  .summary-box td:first-child { color: #5a5a5a; width: 40%; }
+  .summary-box td:last-child { color: #1a2744; font-weight: 500; }
+  .summary-box tr { border-bottom: 1px dotted #e0d8cc; }
+  .summary-box tr:last-child { border-bottom: none; }
+
+  /* 結果カード */
+  .result-card { background: linear-gradient(135deg, #1a2744 0%, #243360 100%); color: #fff; padding: 32px; margin-bottom: 20px; position: relative; }
+  .result-card .corner { position: absolute; top: 16px; right: 24px; font-size: 10px; color: #d4b06a; letter-spacing: 0.2em; }
+  .result-card .label { font-family: 'Yu Mincho', serif; font-size: 13px; opacity: 0.85; margin-bottom: 6px; }
+  .result-card .value { font-family: 'Yu Mincho', serif; font-size: 38px; font-weight: 600; line-height: 1; }
+  .result-card .value.positive { color: #d4b06a; }
+  .result-card .value.negative { color: #ff9a8a; }
+  .result-card .value .unit { font-size: 16px; margin-left: 4px; }
+  .result-card .status { margin-top: 20px; padding: 12px 16px; border-left: 2px solid #d4b06a; font-size: 13px; line-height: 1.8; }
+  .result-card .status.warning { background: rgba(255,154,138,0.15); border-left-color: #ff9a8a; }
+  .result-card .status.ok { background: rgba(180,148,90,0.15); border-left-color: #d4b06a; }
+
+  /* グラフ */
+  .chart-section h3 { font-family: 'Yu Mincho', serif; font-size: 16px; color: #1a2744; margin: 0 0 4px 0; font-weight: 600; letter-spacing: 0.05em; }
+  .chart-section .chart-note { font-size: 11px; color: #5a5a5a; margin-bottom: 16px; }
+  .chart-svg { width: 100%; height: auto; display: block; }
+
+  /* 表 */
+  .table-section table { width: 100%; font-size: 12px; border-collapse: collapse; margin-top: 12px; }
+  .table-section th { padding: 8px 6px; text-align: right; color: #5a5a5a; font-weight: 600; border-bottom: 2px solid #1a2744; }
+  .table-section td { padding: 7px 6px; text-align: right; border-bottom: 1px solid #f8f5ef; }
+  .table-section tr.highlight { background: #fffceb; }
+  .table-section tr.negative { background: #fff5f0; }
+  .table-section .age-cell { font-weight: 600; color: #1a2744; }
+  .table-section .age-note { font-size: 9px; color: #8b6f3f; margin-left: 4px; }
+  .pos { color: #5a7a4f; }
+  .neg { color: #a85a3a; }
+  .assets-cell { font-weight: 700; color: #1a2744; }
+  .assets-cell.negative { color: #a85a3a; }
+
+  /* CTA */
+  .cta-section { background: linear-gradient(135deg, #ffffff 0%, #f0ece4 100%); border: 1px solid #e0d8cc; border-left: 4px solid #b8973e; padding: 28px 32px; margin-bottom: 20px; }
+  .cta-section h2 { font-family: 'Yu Mincho', serif; font-size: 18px; color: #1a2744; font-weight: 600; margin: 0 0 8px 0; }
+  .cta-section p { font-size: 13px; color: #2c2c2c; line-height: 1.8; margin: 0 0 20px 0; }
+  .cta-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { padding: 12px 24px; font-size: 14px; font-family: inherit; cursor: pointer; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 8px; border: none; transition: background 0.2s; }
+  .btn-primary { background: #1a2744; color: #fff; }
+  .btn-primary:hover { background: #243360; }
+  .btn-outline { background: transparent; color: #1a2744; border: 1px solid #1a2744; }
+  .btn-outline:hover { background: #1a2744; color: #fff; }
+
+  /* フッター */
+  .footer { text-align: center; font-size: 10px; color: #5a5a5a; line-height: 1.9; padding: 20px 16px; border-top: 1px solid #e0d8cc; }
+
+  /* 印刷時のみ表示 */
+  .print-only { display: none; }
+  .print-footer { background: #ffffff; border-top: 2px solid #b8973e; padding: 16px 20px; margin-top: 20px; font-size: 11px; line-height: 1.9; }
+  .print-footer h4 { font-family: 'Yu Mincho', serif; font-size: 14px; color: #1a2744; margin: 0 0 8px 0; font-weight: 700; }
+
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: white !important; }
+    .container { max-width: 100% !important; padding: 0 !important; }
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    .result-card { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .chart-section, .table-section, .summary-box, .result-card { page-break-inside: avoid; }
+  }
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+    .header, .section, .result-card, .cta-section { padding: 20px; }
+    .result-card .value { font-size: 30px; }
+    .header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- HPへ戻る -->
+  <div class="no-print" style="font-size: 11px; padding: 4px 0 16px; margin-bottom: 0; letter-spacing: 0.05em;">
+    <a href="../" style="color: #5a5a5a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#1a2744'" onmouseout="this.style.color='#5a5a5a'">← 行政書士 吉岡康生事務所</a>
+  </div>
+
+
+  <!-- 印刷用ヘッダー -->
+  <div class="print-only" style="border-bottom: 2px solid #1a2744; padding-bottom: 12px; margin-bottom: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+      <div>
+        <div class="serif" style="font-size: 18px; font-weight: 700; color: #1a2744;" id="print-firm-name"></div>
+        <div style="font-size: 11px; color: #8b6f3f; margin-top: 2px;" id="print-firm-subtitle"></div>
+      </div>
+      <div style="text-align: right; font-size: 10px; color: #5a5a5a;">
+        <div>リタイアメント資金 試算結果書</div>
+        <div id="print-date"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 画面ヘッダー -->
+  <div class="header no-print">
+    <div class="tag">LIFE PLAN TOOL — 01</div>
+    <h1>リタイアメント資金 シミュレーター</h1>
+    <p>現在の資産・収入・支出から、退職後の資産推移をグラフで可視化します。<br>老後資金が寿命まで持つかどうか、何歳で資金が枯渇するかを確認できます。</p>
+  </div>
+
+  <!-- プライバシー -->
+  <div class="privacy no-print">
+    <span>🔒</span>
+    <span>入力された情報はお客様のブラウザ内でのみ処理され、当事務所のサーバーや外部に送信・保存されることはありません。</span>
+  </div>
+
+  <!-- 入力フォーム -->
+  <div class="section no-print">
+    <div class="section-title">基本情報</div>
+    <div class="slider-row"><div class="label-row"><label>現在の年齢</label><span class="value" id="d-currentAge"></span></div><input type="range" id="i-currentAge" min="30" max="80" value="60"></div>
+    <div class="slider-row"><div class="label-row"><label>退職年齢</label><span class="value" id="d-retireAge"></span></div><input type="range" id="i-retireAge" min="50" max="80" value="65"></div>
+    <div class="slider-row"><div class="label-row"><label>想定寿命</label><span class="value" id="d-lifeExpectancy"></span></div><input type="range" id="i-lifeExpectancy" min="70" max="105" value="90"></div>
+
+    <div class="section-title">収入・資産（現役期）</div>
+    <div class="slider-row"><div class="label-row"><label>現在の金融資産</label><span class="value" id="d-currentAssets"></span></div><input type="range" id="i-currentAssets" min="0" max="20000" step="50" value="3000"></div>
+    <div class="slider-row"><div class="label-row"><label>現役期の年収（手取り）</label><span class="value" id="d-annualIncome"></span></div><input type="range" id="i-annualIncome" min="0" max="2000" step="10" value="600"></div>
+    <div class="slider-row"><div class="label-row"><label>退職金</label><span class="value" id="d-retirementBonus"></span></div><input type="range" id="i-retirementBonus" min="0" max="5000" step="50" value="1500"></div>
+
+    <div class="section-title">退職後の収入</div>
+    <div class="slider-row"><div class="label-row"><label>再雇用等の年収</label><span class="value" id="d-postRetirementIncome"></span></div><input type="range" id="i-postRetirementIncome" min="0" max="600" step="10" value="200"></div>
+    <div class="slider-row"><div class="label-row"><label>再雇用は何歳まで</label><span class="value" id="d-postRetirementUntil"></span></div><input type="range" id="i-postRetirementUntil" min="60" max="75" value="70"></div>
+    <div class="slider-row"><div class="label-row"><label>年金受給開始年齢</label><span class="value" id="d-pensionAge"></span></div><input type="range" id="i-pensionAge" min="60" max="75" value="65"></div>
+    <div class="slider-row"><div class="label-row"><label>年金額（年額）</label><span class="value" id="d-pensionAmount"></span></div><input type="range" id="i-pensionAmount" min="50" max="400" step="5" value="220"></div>
+
+    <div class="section-title">支出・経済前提</div>
+    <div class="slider-row"><div class="label-row"><label>年間生活費（現在価値）</label><span class="value" id="d-annualExpense"></span></div><input type="range" id="i-annualExpense" min="120" max="1000" step="10" value="360"></div>
+    <div class="slider-row"><div class="label-row"><label>資産運用 想定利回り</label><span class="value" id="d-returnRate"></span></div><input type="range" id="i-returnRate" min="0" max="6" step="0.1" value="2"></div>
+    <div class="slider-row"><div class="label-row"><label>想定インフレ率</label><span class="value" id="d-inflationRate"></span></div><input type="range" id="i-inflationRate" min="0" max="4" step="0.1" value="2"></div>
+  </div>
+
+  <!-- 前提条件サマリー -->
+  <div class="summary-box">
+    <h3>ご入力内容</h3>
+    <table>
+      <tr><td>現在の年齢／退職／想定寿命</td><td id="s-ages"></td></tr>
+      <tr><td>現在の金融資産</td><td id="s-assets"></td></tr>
+      <tr><td>現役期の年収／退職金</td><td id="s-incomes"></td></tr>
+      <tr><td>退職後の収入</td><td id="s-postIncomes"></td></tr>
+      <tr><td>年間生活費</td><td id="s-expense"></td></tr>
+      <tr><td>運用利回り／インフレ率</td><td id="s-rates"></td></tr>
+    </table>
+  </div>
+
+  <!-- 結果カード -->
+  <div class="result-card">
+    <div class="corner">ASSET FORECAST</div>
+    <div class="label" id="r-label"></div>
+    <div class="value" id="r-value"></div>
+    <div class="status" id="r-status"></div>
+  </div>
+
+  <!-- グラフ -->
+  <div class="section chart-section">
+    <h3>資産残高の推移</h3>
+    <div class="chart-note">縦線は退職年齢と年金受給開始年齢を示します。</div>
+    <svg id="chart" class="chart-svg" viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+
+  <!-- 表 -->
+  <div class="section table-section">
+    <h3 style="font-family: 'Yu Mincho', serif; font-size: 16px; color: #1a2744; margin: 0; font-weight: 600;">5歳刻みの収支サマリー（万円）</h3>
+    <table>
+      <thead>
+        <tr><th>年齢</th><th>収入</th><th>支出</th><th>収支</th><th>資産残高</th></tr>
+      </thead>
+      <tbody id="summary-rows"></tbody>
+    </table>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section no-print">
+    <h2 id="cta-headline"></h2>
+    <p id="cta-lead"></p>
+    <div class="cta-buttons">
+      <button class="btn btn-primary" onclick="handleContact()">個別相談する →</button>
+      <button class="btn btn-outline" onclick="window.print()">📄 結果をPDF保存／印刷</button>
+    </div>
+  </div>
+
+  <!-- 印刷用フッター -->
+  <div class="print-only print-footer">
+    <h4>ご相談・お問い合わせ</h4>
+    <div>
+      <div><strong id="pf-name"></strong>　<span id="pf-subtitle"></span></div>
+      <div id="pf-address"></div>
+      <div>TEL: <span id="pf-tel"></span>　／　Email: <span id="pf-email"></span></div>
+      <div>Web: <span id="pf-website"></span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>※ 本シミュレーションは概算であり、税金・社会保険料・医療費等の変動は含まれません。</p>
+    <p>※ 詳細なライフプラン設計はCFP®認定者による個別相談をおすすめします。</p>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  ◆◆◆ 設定セクション（事務所情報） ◆◆◆
+//  ここを書き換えてください
+// ============================================================
+const FIRM_INFO = {
+  name: "行政書士 吉岡康生事務所",
+  subtitle: "行政書士 ／ CFP®認定者 ／ 1級FP技能士",
+  tel: "072-741-6693",
+  email: "yasuo@yoshioka-gyosei.jp",
+  address: "〒666-0133 兵庫県川西市鴬台2-1-82",
+  website: "https://yoshioka-gyosei.jp",
+  contactUrl: "https://yoshioka-gyosei.jp/#contact",
+  consultationHeadline: "この結果について、より詳しくご相談いただけます",
+  consultationLead: "初回相談は60分・無料です。シミュレーション結果を踏まえ、ご家族構成・資産・お考えに合わせた個別のライフプラン設計をいたします。",
+};
+// ============================================================
+
+// 状態
+const state = {
+  currentAge: 60, retireAge: 65, lifeExpectancy: 90,
+  currentAssets: 3000, annualIncome: 600, retirementBonus: 1500,
+  postRetirementIncome: 200, postRetirementUntil: 70,
+  pensionAge: 65, pensionAmount: 220,
+  annualExpense: 360, returnRate: 2.0, inflationRate: 2.0,
+};
+
+const fmtMan = (v) => v.toLocaleString();
+
+// 計算
+function calculate() {
+  const arr = [];
+  let assets = state.currentAssets * 10000;
+  const r = state.returnRate / 100;
+  const inf = state.inflationRate / 100;
+  for (let age = state.currentAge; age <= state.lifeExpectancy; age++) {
+    const yrs = age - state.currentAge;
+    let income = 0;
+    if (age < state.retireAge) income = state.annualIncome * 10000;
+    else if (age < state.postRetirementUntil) income = state.postRetirementIncome * 10000;
+    if (age >= state.pensionAge) income += state.pensionAmount * 10000;
+    if (age === state.retireAge) income += state.retirementBonus * 10000;
+    const expense = state.annualExpense * 10000 * Math.pow(1 + inf, yrs);
+    const net = income - expense;
+    assets = (assets + net) * (1 + r);
+    arr.push({
+      age, assets, assetsMan: Math.round(assets / 10000),
+      income: Math.round(income / 10000), expense: Math.round(expense / 10000),
+      net: Math.round((income - expense) / 10000),
+    });
+  }
+  return arr;
+}
+
+// 描画
+function render() {
+  // 表示値
+  document.getElementById('d-currentAge').textContent = `${state.currentAge}歳`;
+  document.getElementById('d-retireAge').textContent = `${state.retireAge}歳`;
+  document.getElementById('d-lifeExpectancy').textContent = `${state.lifeExpectancy}歳`;
+  document.getElementById('d-currentAssets').textContent = `${fmtMan(state.currentAssets)}万円`;
+  document.getElementById('d-annualIncome').textContent = `${state.annualIncome}万円`;
+  document.getElementById('d-retirementBonus').textContent = `${fmtMan(state.retirementBonus)}万円`;
+  document.getElementById('d-postRetirementIncome').textContent = `${state.postRetirementIncome}万円`;
+  document.getElementById('d-postRetirementUntil').textContent = `${state.postRetirementUntil}歳まで`;
+  document.getElementById('d-pensionAge').textContent = `${state.pensionAge}歳`;
+  document.getElementById('d-pensionAmount').textContent = `${state.pensionAmount}万円`;
+  document.getElementById('d-annualExpense').textContent = `${state.annualExpense}万円`;
+  document.getElementById('d-returnRate').textContent = `${state.returnRate.toFixed(1)}%`;
+  document.getElementById('d-inflationRate').textContent = `${state.inflationRate.toFixed(1)}%`;
+
+  // 計算
+  const data = calculate();
+  const finalAssets = data[data.length - 1].assets;
+  const depletion = data.find((d) => d.assets < 0);
+
+  // サマリーボックス
+  document.getElementById('s-ages').textContent = `${state.currentAge}歳 → 退職${state.retireAge}歳 → 想定寿命${state.lifeExpectancy}歳`;
+  document.getElementById('s-assets').textContent = `${fmtMan(state.currentAssets)}万円`;
+  document.getElementById('s-incomes').textContent = `年収${state.annualIncome}万円 ／ 退職金${fmtMan(state.retirementBonus)}万円`;
+  document.getElementById('s-postIncomes').textContent = `再雇用${state.postRetirementIncome}万円（${state.postRetirementUntil}歳まで）／ 年金${state.pensionAmount}万円（${state.pensionAge}歳から）`;
+  document.getElementById('s-expense').textContent = `${state.annualExpense}万円（現在価値）`;
+  document.getElementById('s-rates').textContent = `利回り${state.returnRate.toFixed(1)}% ／ インフレ${state.inflationRate.toFixed(1)}%`;
+
+  // 結果カード
+  document.getElementById('r-label').textContent = `${state.lifeExpectancy}歳時点の予測資産残高`;
+  const rValue = document.getElementById('r-value');
+  rValue.className = 'value ' + (finalAssets >= 0 ? 'positive' : 'negative');
+  rValue.innerHTML = `${finalAssets >= 0 ? '+' : ''}${Math.round(finalAssets / 10000).toLocaleString()}<span class="unit">万円</span>`;
+
+  const status = document.getElementById('r-status');
+  if (depletion) {
+    status.className = 'status warning';
+    status.innerHTML = `<strong style="color:#ff9a8a">注意:</strong> 現在の前提では <strong>${depletion.age}歳</strong>頃に資産が枯渇する可能性があります。生活費の見直し、運用利回りの引き上げ、就労期間の延長などをご検討ください。`;
+  } else {
+    status.className = 'status ok';
+    status.textContent = '✓ 現在の前提では、想定寿命まで資産は維持される見込みです。';
+  }
+
+  // グラフ
+  drawAreaChart(data);
+
+  // 表
+  drawTable(data);
+}
+
+// SVG面グラフ
+function drawAreaChart(data) {
+  const svg = document.getElementById('chart');
+  const W = 800, H = 360;
+  const PAD = { top: 20, right: 30, bottom: 40, left: 70 };
+  const cw = W - PAD.left - PAD.right;
+  const ch = H - PAD.top - PAD.bottom;
+
+  const xMin = data[0].age;
+  const xMax = data[data.length - 1].age;
+  const yValues = data.map((d) => d.assets);
+  const yMin = Math.min(0, ...yValues);
+  const yMaxRaw = Math.max(...yValues);
+  // Y軸の上限を少し丸める
+  const yMax = niceUpper(yMaxRaw, yMin);
+  const yMinRounded = niceLower(yMin, yMax);
+
+  const xScale = (a) => PAD.left + (a - xMin) / (xMax - xMin) * cw;
+  const yScale = (v) => PAD.top + (1 - (v - yMinRounded) / (yMax - yMinRounded)) * ch;
+
+  let html = '';
+
+  // Y軸グリッド・ラベル
+  const yTicks = generateTicks(yMinRounded, yMax, 5);
+  yTicks.forEach((t) => {
+    const y = yScale(t);
+    html += `<line x1="${PAD.left}" y1="${y}" x2="${W - PAD.right}" y2="${y}" stroke="#e0d8cc" stroke-dasharray="2 4"/>`;
+    html += `<text x="${PAD.left - 8}" y="${y + 3}" text-anchor="end" font-size="10" fill="#5a5a5a">${Math.round(t / 10000).toLocaleString()}万</text>`;
+  });
+
+  // X軸ラベル
+  const xTicks = [];
+  for (let a = Math.ceil(xMin / 5) * 5; a <= xMax; a += 5) xTicks.push(a);
+  xTicks.forEach((t) => {
+    const x = xScale(t);
+    html += `<line x1="${x}" y1="${H - PAD.bottom}" x2="${x}" y2="${H - PAD.bottom + 4}" stroke="#5a5a5a"/>`;
+    html += `<text x="${x}" y="${H - PAD.bottom + 18}" text-anchor="middle" font-size="11" fill="#5a5a5a">${t}歳</text>`;
+  });
+
+  // 面エリア
+  const pathTop = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xScale(d.age)} ${yScale(d.assets)}`).join(' ');
+  const areaPath = `${pathTop} L ${xScale(xMax)} ${yScale(yMinRounded)} L ${xScale(xMin)} ${yScale(yMinRounded)} Z`;
+  html = `<defs><linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#b8973e" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#b8973e" stop-opacity="0.05"/>
+  </linearGradient></defs>` + html;
+  html += `<path d="${areaPath}" fill="url(#goldGrad)"/>`;
+  html += `<path d="${pathTop}" fill="none" stroke="#b8973e" stroke-width="2"/>`;
+
+  // ゼロライン
+  if (yMinRounded < 0) {
+    const y0 = yScale(0);
+    html += `<line x1="${PAD.left}" y1="${y0}" x2="${W - PAD.right}" y2="${y0}" stroke="#a85a3a" stroke-dasharray="3 3" stroke-width="1"/>`;
+  }
+
+  // 退職年齢ライン
+  if (state.retireAge >= xMin && state.retireAge <= xMax) {
+    const x = xScale(state.retireAge);
+    html += `<line x1="${x}" y1="${PAD.top}" x2="${x}" y2="${H - PAD.bottom}" stroke="#1a2744" stroke-dasharray="4 4" stroke-width="1.5"/>`;
+    html += `<text x="${x}" y="${PAD.top - 4}" text-anchor="middle" font-size="11" fill="#1a2744" font-weight="600">退職</text>`;
+  }
+
+  // 年金開始ライン
+  if (state.pensionAge >= xMin && state.pensionAge <= xMax && state.pensionAge !== state.retireAge) {
+    const x = xScale(state.pensionAge);
+    html += `<line x1="${x}" y1="${PAD.top + 16}" x2="${x}" y2="${H - PAD.bottom}" stroke="#b8973e" stroke-dasharray="4 4" stroke-width="1.5"/>`;
+    html += `<text x="${x}" y="${PAD.top + 12}" text-anchor="middle" font-size="11" fill="#b8973e" font-weight="600">年金開始</text>`;
+  }
+
+  // 軸線
+  html += `<line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
+  html += `<line x1="${PAD.left}" y1="${H - PAD.bottom}" x2="${W - PAD.right}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
+
+  svg.innerHTML = html;
+}
+
+// 表
+function drawTable(data) {
+  const rows = data.filter((d) => d.age % 5 === 0 || d.age === state.retireAge || d.age === state.pensionAge || d.age === state.lifeExpectancy);
+  // 重複除去
+  const seen = new Set();
+  const filtered = [];
+  rows.forEach((r) => { if (!seen.has(r.age)) { seen.add(r.age); filtered.push(r); } });
+
+  const tbody = document.getElementById('summary-rows');
+  tbody.innerHTML = filtered.map((d) => {
+    const label = d.age === state.retireAge ? '退職' : d.age === state.pensionAge ? '年金開始' : '';
+    const trClass = d.assets < 0 ? 'negative' : (d.age === state.retireAge ? 'highlight' : '');
+    return `<tr class="${trClass}">
+      <td class="age-cell">${d.age}歳${label ? `<span class="age-note">(${label})</span>` : ''}</td>
+      <td class="pos">${d.income.toLocaleString()}</td>
+      <td class="neg">${d.expense.toLocaleString()}</td>
+      <td class="${d.net >= 0 ? 'pos' : 'neg'}">${d.net >= 0 ? '+' : ''}${d.net.toLocaleString()}</td>
+      <td class="assets-cell ${d.assets < 0 ? 'negative' : ''}">${d.assetsMan.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ヘルパー
+function niceUpper(v, lower) {
+  if (v <= 0) return Math.abs(lower) * 0.2;
+  const mag = Math.pow(10, Math.floor(Math.log10(v)));
+  return Math.ceil(v / mag) * mag;
+}
+function niceLower(v, upper) {
+  if (v >= 0) return 0;
+  const mag = Math.pow(10, Math.floor(Math.log10(Math.abs(v))));
+  return Math.floor(v / mag) * mag;
+}
+function generateTicks(min, max, n) {
+  const step = (max - min) / n;
+  const ticks = [];
+  for (let i = 0; i <= n; i++) ticks.push(min + step * i);
+  return ticks;
+}
+
+// 連絡先ボタン
+function handleContact() {
+  if (FIRM_INFO.contactUrl.startsWith('#')) {
+    const t = document.querySelector(FIRM_INFO.contactUrl);
+    if (t) t.scrollIntoView({ behavior: 'smooth' });
+    else window.location.hash = FIRM_INFO.contactUrl;
+  } else {
+    window.location.href = FIRM_INFO.contactUrl;
+  }
+}
+
+// 初期化
+function init() {
+  // 事務所情報を反映
+  document.getElementById('print-firm-name').textContent = FIRM_INFO.name;
+  document.getElementById('print-firm-subtitle').textContent = FIRM_INFO.subtitle;
+  document.getElementById('cta-headline').textContent = FIRM_INFO.consultationHeadline;
+  document.getElementById('cta-lead').textContent = FIRM_INFO.consultationLead;
+  document.getElementById('pf-name').textContent = FIRM_INFO.name;
+  document.getElementById('pf-subtitle').textContent = FIRM_INFO.subtitle;
+  document.getElementById('pf-address').textContent = FIRM_INFO.address;
+  document.getElementById('pf-tel').textContent = FIRM_INFO.tel;
+  document.getElementById('pf-email').textContent = FIRM_INFO.email;
+  document.getElementById('pf-website').textContent = FIRM_INFO.website;
+  const today = new Date();
+  document.getElementById('print-date').textContent = `作成日: ${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+
+  // スライダーのイベント
+  Object.keys(state).forEach((key) => {
+    const input = document.getElementById('i-' + key);
+    if (!input) return;
+    input.value = state[key];
+    input.addEventListener('input', (e) => {
+      state[key] = Number(e.target.value);
+      // 退職以降の制約
+      if (key === 'retireAge' && state.postRetirementUntil < state.retireAge) state.postRetirementUntil = state.retireAge;
+      render();
+    });
+  });
+
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
