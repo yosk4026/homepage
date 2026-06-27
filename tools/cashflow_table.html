@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>キャッシュフロー表</title>
+<title>ライフプランニング表（統合キャッシュフロー）｜行政書士 吉岡康生事務所</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -19,31 +19,75 @@
   .privacy { padding: 10px 16px; margin-bottom: 20px; background: #f0ece4; border-left: 2px solid #5a7a4f; font-size: 11px; line-height: 1.7; display: flex; gap: 10px; }
 
   .section { background: #ffffff; padding: 24px 28px; margin-bottom: 20px; }
-  .section-title { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; font-weight: 600; letter-spacing: 0.1em; margin: 20px 0 14px 0; padding-left: 10px; border-left: 2px solid #b8973e; }
+  .section-title { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; font-weight: 600; letter-spacing: 0.1em; margin: 22px 0 14px 0; padding-left: 10px; border-left: 2px solid #b8973e; display: flex; justify-content: space-between; align-items: center; }
   .section-title:first-child { margin-top: 0; }
+  .section-title .preset-btn { margin-left: auto; }
 
   .slider-row { margin-bottom: 14px; }
   .slider-row .label-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
   .slider-row label { font-size: 11px; color: #5a5a5a; }
   .slider-row .value { font-size: 13px; color: #1a2744; font-weight: 600; }
-  .slider-row input[type="range"] { width: 100%; -webkit-appearance: none; height: 4px; background: #e0d8cc; border-radius: 2px; outline: none; }
-  .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #b8973e; border-radius: 50%; cursor: pointer; }
-  .slider-row input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; background: #b8973e; border-radius: 50%; cursor: pointer; border: none; }
+  .slider-row input[type="range"] { width: 100%; -webkit-appearance: none; height: 6px; background: #e0d8cc; border-radius: 3px; outline: none; }
+  .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; background: #b8973e; border-radius: 50%; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+  .slider-row input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; background: #b8973e; border-radius: 50%; cursor: pointer; border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+
+  /* 数字入力＋増減ボタン（スライダーと連動） */
+  .stepper { display: inline-flex; align-items: center; gap: 5px; }
+  .stepper button { width: 32px; height: 32px; border: 1px solid #c9bca0; background: #fff; color: #1a2744; font-size: 20px; line-height: 1; cursor: pointer; border-radius: 7px; font-family: inherit; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .stepper button:hover { background: #f0ece4; }
+  .stepper button:active { background: #e6ddca; }
+  .stepper input { width: 90px; text-align: right; padding: 6px 8px; border: 1px solid #c9bca0; border-radius: 7px; font-size: 16px; font-family: inherit; color: #1a2744; font-weight: 600; -webkit-appearance: none; -moz-appearance: textfield; appearance: textfield; }
+  .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper input:focus { outline: none; border-color: #b8973e; background: #fffdf7; }
+  .stepper .su { font-size: 12px; color: #5a5a5a; min-width: 26px; }
+  .slider-row .label-row { align-items: center; }
+  .slider-row .label-row label { font-size: 12px; }
+
+  /* 数値入力グリッド（新セクション用） */
+  .num-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+  .num-grid.full { grid-template-columns: 1fr; }
+  .num-field { display: flex; flex-direction: column; gap: 4px; }
+  .num-field.span2 { grid-column: 1 / -1; }
+  .num-field label { font-size: 11px; color: #5a5a5a; }
+  .num-field .wrap { position: relative; }
+  .num-field input[type="number"], .num-field select { width: 100%; padding: 8px 38px 8px 10px; border: 1px solid #e0d8cc; border-radius: 4px; background: #fff; color: #1a2744; font-size: 13px; font-family: inherit; outline: none; -webkit-appearance: none; appearance: none; }
+  .num-field input:focus, .num-field select:focus { border-color: #b8973e; }
+  .num-field .unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #8b8b8b; pointer-events: none; }
+
+  /* セグメント（有無切替） */
+  .seg { display: inline-flex; border: 1px solid #e0d8cc; border-radius: 4px; overflow: hidden; }
+  .seg button { padding: 6px 14px; font-size: 12px; background: #fff; border: none; border-right: 1px solid #e0d8cc; cursor: pointer; font-family: inherit; color: #5a5a5a; }
+  .seg button:last-child { border-right: none; }
+  .seg button.active { background: #1a2744; color: #fff; }
+
+  /* プリセットボタン */
+  .preset-btn { background: transparent; border: 1px dashed #b8973e; color: #8b6f3f; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: inherit; border-radius: 4px; white-space: nowrap; }
+  .preset-btn:hover { background: #f0ece4; }
+
+  /* 子供カード */
+  .child-card { border: 1px solid #e0d8cc; border-left: 3px solid #4a7c9b; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; background: #fcfbf8; }
+  .child-card .child-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .child-card .child-head strong { font-size: 13px; color: #1a2744; }
+  .child-card .del-child { background: #fff; color: #a85a3a; border: 1px solid #e0d8cc; cursor: pointer; padding: 4px 10px; font-size: 11px; font-family: inherit; border-radius: 4px; }
+  .child-card .edu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 12px; }
+  .child-card .edu-grid .num-field.wide { grid-column: span 3; }
+  @media (max-width: 560px) { .child-card .edu-grid { grid-template-columns: 1fr 1fr; } .child-card .edu-grid .num-field.wide { grid-column: span 2; } }
 
   /* イベントリスト */
   .events-list { margin: 12px 0; }
-  .event-row { display: grid; grid-template-columns: 160px 80px 80px 110px 40px; gap: 8px; align-items: center; padding: 8px 10px; background: #fff; margin-bottom: 6px; border-left: 3px solid; }
+  .event-row { display: grid; grid-template-columns: 150px 70px 70px 100px 70px 36px; gap: 8px; align-items: center; padding: 8px 10px; background: #fff; margin-bottom: 6px; border-left: 3px solid; border-radius: 4px; }
   .event-row.expense { border-left-color: #a85a3a; }
   .event-row.income { border-left-color: #5a7a4f; }
-  .event-row select, .event-row input { padding: 6px 8px; border: 1px solid #e0d8cc; background: #fff; color: #1a2744; font-size: 12px; font-family: inherit; outline: none; width: 100%; }
+  .event-row select, .event-row input { padding: 6px 8px; border: 1px solid #e0d8cc; background: #fff; color: #1a2744; font-size: 12px; font-family: inherit; outline: none; width: 100%; border-radius: 4px; }
   .event-row .age-cell { text-align: center; font-size: 11px; color: #5a5a5a; }
   .event-row .age-cell input { text-align: right; }
-  .event-row .delete-btn { background: #fff; color: #a85a3a; border: 1px solid #e0d8cc; cursor: pointer; padding: 6px; font-size: 14px; font-family: inherit; }
+  .event-row .delete-btn { background: #fff; color: #a85a3a; border: 1px solid #e0d8cc; cursor: pointer; padding: 6px; font-size: 14px; font-family: inherit; border-radius: 4px; }
   .event-row .delete-btn:hover { background: #fff5f0; }
   .add-event { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .add-event button { background: transparent; border: 1px dashed #b8973e; color: #8b6f3f; padding: 8px 16px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .add-event button { background: transparent; border: 1px dashed #b8973e; color: #8b6f3f; padding: 8px 14px; font-size: 12px; cursor: pointer; font-family: inherit; border-radius: 4px; }
   .add-event button:hover { background: #f0ece4; }
-  .events-empty { font-size: 12px; color: #5a5a5a; padding: 16px; text-align: center; background: #fff; border: 1px dashed #e0d8cc; }
+  .events-empty { font-size: 12px; color: #5a5a5a; padding: 16px; text-align: center; background: #fff; border: 1px dashed #e0d8cc; border-radius: 4px; }
+  .event-grouplabel { font-size: 11px; color: #8b6f3f; margin: 12px 0 4px; font-weight: 600; }
 
   /* サマリーカード */
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -53,6 +97,14 @@
   .stat-card .stat-value.negative { color: #ff9a8a; }
   .stat-card .stat-sub { font-size: 11px; opacity: 0.7; margin-top: 6px; }
 
+  /* 診断ボックス */
+  .diag-box { background: linear-gradient(135deg, #ffffff 0%, #f6f2e8 100%); border: 1px solid #e0d8cc; border-left: 4px solid #5a7a4f; padding: 20px 24px; margin-bottom: 20px; }
+  .diag-box.alert { border-left-color: #a85a3a; }
+  .diag-box h3 { font-family: 'Yu Mincho', serif; font-size: 15px; color: #1a2744; margin: 0 0 10px 0; }
+  .diag-box ul { margin: 0; padding-left: 4px; list-style: none; }
+  .diag-box li { font-size: 13px; line-height: 1.9; color: #2c2c2c; display: flex; gap: 8px; }
+  .diag-box li .ic { flex-shrink: 0; }
+
   /* グラフ */
   .chart-section h3 { font-family: 'Yu Mincho', serif; font-size: 16px; color: #1a2744; margin: 0 0 4px 0; font-weight: 600; letter-spacing: 0.05em; }
   .chart-section .chart-note { font-size: 11px; color: #5a5a5a; margin-bottom: 16px; }
@@ -60,7 +112,7 @@
 
   /* テーブル */
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; }
-  .cf-table { width: 100%; font-size: 12px; border-collapse: collapse; min-width: 720px; }
+  .cf-table { width: 100%; font-size: 12px; border-collapse: collapse; min-width: 860px; }
   .cf-table th { padding: 10px 6px; text-align: right; color: #5a5a5a; font-weight: 600; border-bottom: 2px solid #1a2744; white-space: nowrap; background: #ffffff; position: sticky; top: 0; }
   .cf-table th:first-child { text-align: left; }
   .cf-table td { padding: 6px 6px; text-align: right; border-bottom: 1px solid #f8f5ef; white-space: nowrap; }
@@ -75,15 +127,21 @@
   .row-tag { display: inline-block; font-size: 9px; color: #8b6f3f; margin-left: 4px; font-weight: 400; }
 
   .view-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
-  .view-toggle button { padding: 6px 12px; font-size: 11px; background: #fff; border: 1px solid #e0d8cc; cursor: pointer; font-family: inherit; color: #5a5a5a; }
+  .view-toggle button { padding: 6px 12px; font-size: 11px; background: #fff; border: 1px solid #e0d8cc; cursor: pointer; font-family: inherit; color: #5a5a5a; border-radius: 4px; }
   .view-toggle button.active { background: #1a2744; color: #fff; border-color: #1a2744; }
+
+  /* 出典 */
+  .source-box { background: #faf7f0; border: 1px solid #e0d8cc; border-radius: 6px; padding: 16px 20px; font-size: 11px; line-height: 1.9; color: #5a5a5a; }
+  .source-box h4 { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; margin: 0 0 8px 0; }
+  .source-box dt { font-weight: 700; color: #1a2744; margin-top: 6px; }
+  .source-box dd { margin: 0 0 0 0; }
 
   /* CTA */
   .cta-section { background: linear-gradient(135deg, #ffffff 0%, #f0ece4 100%); border: 1px solid #e0d8cc; border-left: 4px solid #b8973e; padding: 28px 32px; margin-bottom: 20px; }
   .cta-section h2 { font-family: 'Yu Mincho', serif; font-size: 18px; color: #1a2744; font-weight: 600; margin: 0 0 8px 0; }
   .cta-section p { font-size: 13px; color: #2c2c2c; line-height: 1.8; margin: 0 0 20px 0; }
   .cta-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn { padding: 12px 24px; font-size: 14px; font-family: inherit; cursor: pointer; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 8px; border: none; }
+  .btn { padding: 12px 24px; font-size: 14px; font-family: inherit; cursor: pointer; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 8px; border: none; border-radius: 4px; }
   .btn-primary { background: #1a2744; color: #fff; }
   .btn-primary:hover { background: #243360; }
   .btn-outline { background: transparent; color: #1a2744; border: 1px solid #1a2744; }
@@ -104,7 +162,7 @@
     .no-print { display: none !important; }
     .print-only { display: block !important; }
     .stat-card { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .chart-section, .stats-grid { page-break-inside: avoid; }
+    .chart-section, .stats-grid, .diag-box { page-break-inside: avoid; }
     .cf-table { font-size: 10px; min-width: auto; }
     .cf-table th { position: static; }
   }
@@ -112,7 +170,8 @@
     .container { padding: 12px; }
     .header, .section, .cta-section { padding: 20px; }
     .stats-grid { grid-template-columns: 1fr; }
-    .event-row { grid-template-columns: 1fr; gap: 6px; }
+    .num-grid { grid-template-columns: 1fr; }
+    .event-row { grid-template-columns: 1fr 1fr; gap: 6px; }
     .header h1 { font-size: 22px; }
   }
 </style>
@@ -121,9 +180,8 @@
 <div class="container">
   <!-- HPへ戻る -->
   <div class="no-print" style="font-size: 11px; padding: 4px 0 16px; margin-bottom: 0; letter-spacing: 0.05em;">
-    <a href="../" style="color: #5a5a5a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#1a2744'" onmouseout="this.style.color='#5a5a5a'">← 行政書士 吉岡康生事務所</a>
+    <a href="../" style="color: #5a5a5a; text-decoration: none;" onmouseover="this.style.color='#1a2744'" onmouseout="this.style.color='#5a5a5a'">← 行政書士 吉岡康生事務所</a>
   </div>
-
 
   <!-- 印刷用ヘッダー -->
   <div class="print-only" style="border-bottom: 2px solid #1a2744; padding-bottom: 12px; margin-bottom: 16px;">
@@ -133,7 +191,7 @@
         <div style="font-size: 11px; color: #8b6f3f; margin-top: 2px;" id="print-firm-subtitle"></div>
       </div>
       <div style="text-align: right; font-size: 10px; color: #5a5a5a;">
-        <div>キャッシュフロー表</div>
+        <div>ライフプランニング表（キャッシュフロー）</div>
         <div id="print-date"></div>
       </div>
     </div>
@@ -142,8 +200,8 @@
   <!-- 画面ヘッダー -->
   <div class="header no-print">
     <div class="tag">LIFE PLAN TOOL — 03</div>
-    <h1>キャッシュフロー表</h1>
-    <p>現在から想定寿命までの年次収支と資産残高を表形式で可視化します。住宅購入・教育費・介護など個別のライフイベントを追加して、現実的な資金計画を立てます。</p>
+    <h1>ライフプランニング表</h1>
+    <p>ご家族の構成・お子様の進路（公立／私立）・住宅・年金などを反映し、現在から想定寿命までの世帯収支と資産残高を一覧化します。公的統計に基づく全国平均をワンタッチで取り込めます。</p>
   </div>
 
   <div class="privacy no-print">
@@ -151,44 +209,104 @@
     <span>入力された情報はお客様のブラウザ内でのみ処理され、当事務所のサーバーや外部に送信・保存されることはありません。</span>
   </div>
 
-  <!-- 入力フォーム -->
+  <!-- ===== 入力フォーム ===== -->
   <div class="section no-print">
-    <div class="section-title">基本情報</div>
-    <div class="slider-row"><div class="label-row"><label>現在の年齢</label><span class="value" id="d-currentAge"></span></div><input type="range" id="i-currentAge" min="20" max="80" value="55"></div>
-    <div class="slider-row"><div class="label-row"><label>想定寿命</label><span class="value" id="d-lifeExpectancy"></span></div><input type="range" id="i-lifeExpectancy" min="70" max="105" value="90"></div>
 
-    <div class="section-title">収入</div>
-    <div class="slider-row"><div class="label-row"><label>現役期の年収（手取り）</label><span class="value" id="d-annualIncome"></span></div><input type="range" id="i-annualIncome" min="0" max="2000" step="10" value="700"></div>
+    <div class="section-title">基本情報・ご家族構成</div>
+    <div class="slider-row"><div class="label-row"><label>ご本人の現在の年齢</label><span class="value" id="d-currentAge"></span></div><input type="range" id="i-currentAge" min="20" max="80" value="40"></div>
+    <div class="slider-row"><div class="label-row"><label>想定寿命</label><span class="value" id="d-lifeExpectancy"></span></div><input type="range" id="i-lifeExpectancy" min="70" max="105" value="90"></div>
+    <div class="num-grid" style="margin-top:6px">
+      <div class="num-field">
+        <label>配偶者</label>
+        <div class="seg" id="seg-spouse">
+          <button data-v="1" class="active" onclick="setSpouse(true)">あり</button>
+          <button data-v="0" onclick="setSpouse(false)">なし</button>
+        </div>
+      </div>
+      <div class="num-field" id="spouse-age-field">
+        <label>配偶者の現在の年齢</label>
+        <div class="wrap"><input type="number" id="i-spouseAge" value="38" min="18" max="100"><span class="unit">歳</span></div>
+      </div>
+    </div>
+
+    <div class="section-title">収入（ご本人）</div>
+    <div class="slider-row"><div class="label-row"><label>現役期の年収（手取り）</label><span class="value" id="d-annualIncome"></span></div><input type="range" id="i-annualIncome" min="0" max="2000" step="10" value="500"></div>
     <div class="slider-row"><div class="label-row"><label>退職年齢</label><span class="value" id="d-retireAge"></span></div><input type="range" id="i-retireAge" min="50" max="80" value="65"></div>
     <div class="slider-row"><div class="label-row"><label>退職金</label><span class="value" id="d-retirementBonus"></span></div><input type="range" id="i-retirementBonus" min="0" max="5000" step="50" value="1500"></div>
-    <div class="slider-row"><div class="label-row"><label>再雇用年収</label><span class="value" id="d-postRetirementIncome"></span></div><input type="range" id="i-postRetirementIncome" min="0" max="600" step="10" value="200"></div>
+    <div class="slider-row"><div class="label-row"><label>再雇用年収（手取り）</label><span class="value" id="d-postRetirementIncome"></span></div><input type="range" id="i-postRetirementIncome" min="0" max="600" step="10" value="200"></div>
     <div class="slider-row"><div class="label-row"><label>再雇用は何歳まで</label><span class="value" id="d-postRetirementUntil"></span></div><input type="range" id="i-postRetirementUntil" min="60" max="75" value="70"></div>
     <div class="slider-row"><div class="label-row"><label>年金受給開始年齢</label><span class="value" id="d-pensionAge"></span></div><input type="range" id="i-pensionAge" min="60" max="75" value="65"></div>
-    <div class="slider-row"><div class="label-row"><label>年金額（年額）</label><span class="value" id="d-pensionAmount"></span></div><input type="range" id="i-pensionAmount" min="50" max="400" step="5" value="220"></div>
+    <div class="slider-row"><div class="label-row"><label>年金額（年額）<button class="preset-btn" style="margin-left:8px;padding:2px 8px" onclick="presetPension('self')">モデル年金を入れる</button></label><span class="value" id="d-pensionAmount"></span></div><input type="range" id="i-pensionAmount" min="50" max="400" step="5" value="180"></div>
+
+    <div id="spouse-income-block">
+      <div class="section-title">収入（配偶者）</div>
+      <div class="num-grid">
+        <div class="num-field"><label>配偶者の年収（手取り）</label><div class="wrap"><input type="number" id="i-spouseIncome" value="120" min="0" max="2000" step="10"><span class="unit">万円</span></div></div>
+        <div class="num-field"><label>配偶者の退職（就労終了）年齢</label><div class="wrap"><input type="number" id="i-spouseRetireAge" value="65" min="0" max="80"><span class="unit">歳</span></div></div>
+        <div class="num-field"><label>配偶者の年金開始年齢</label><div class="wrap"><input type="number" id="i-spousePensionAge" value="65" min="60" max="75"><span class="unit">歳</span></div></div>
+        <div class="num-field"><label>配偶者の年金額（年額）<button class="preset-btn" style="margin-left:6px;padding:2px 8px" onclick="presetPension('spouse')">基礎年金満額</button></label><div class="wrap"><input type="number" id="i-spousePension" value="80" min="0" max="300" step="5"><span class="unit">万円</span></div></div>
+      </div>
+    </div>
 
     <div class="section-title">資産</div>
-    <div class="slider-row"><div class="label-row"><label>現在の金融資産</label><span class="value" id="d-currentAssets"></span></div><input type="range" id="i-currentAssets" min="0" max="20000" step="50" value="2000"></div>
+    <div class="slider-row"><div class="label-row"><label>現在の金融資産</label><span class="value" id="d-currentAssets"></span></div><input type="range" id="i-currentAssets" min="0" max="20000" step="50" value="800"></div>
     <div class="slider-row"><div class="label-row"><label>資産運用 想定利回り</label><span class="value" id="d-returnRate"></span></div><input type="range" id="i-returnRate" min="0" max="6" step="0.1" value="2"></div>
 
-    <div class="section-title">支出</div>
-    <div class="slider-row"><div class="label-row"><label>現役期の年間生活費（現在価値）</label><span class="value" id="d-activeExpense"></span></div><input type="range" id="i-activeExpense" min="120" max="1000" step="10" value="420"></div>
-    <div class="slider-row"><div class="label-row"><label>退職後の年間生活費（現在価値）</label><span class="value" id="d-retiredExpense"></span></div><input type="range" id="i-retiredExpense" min="120" max="800" step="10" value="320"></div>
-    <div class="slider-row"><div class="label-row"><label>想定インフレ率</label><span class="value" id="d-inflationRate"></span></div><input type="range" id="i-inflationRate" min="0" max="4" step="0.1" value="2"></div>
+    <div class="section-title">支出・生活費<button class="preset-btn" onclick="presetLiving()">全国平均を入れる（家計調査）</button></div>
+    <div class="slider-row"><div class="label-row"><label>現役期の年間生活費（教育費・住宅費を除く）</label><span class="value" id="d-activeExpense"></span></div><input type="range" id="i-activeExpense" min="120" max="1000" step="10" value="320"></div>
+    <div class="slider-row"><div class="label-row"><label>退職後の年間生活費</label><span class="value" id="d-retiredExpense"></span></div><input type="range" id="i-retiredExpense" min="120" max="800" step="10" value="280"></div>
+    <div class="slider-row"><div class="label-row"><label>想定インフレ率（生活費に適用）</label><span class="value" id="d-inflationRate"></span></div><input type="range" id="i-inflationRate" min="0" max="4" step="0.1" value="1.5"></div>
 
-    <div class="section-title">ライフイベント</div>
+    <div class="section-title">住宅</div>
+    <div class="num-grid full" style="margin-bottom:10px">
+      <div class="num-field">
+        <label>住宅の形態</label>
+        <div class="seg" id="seg-housing">
+          <button data-v="none" class="active" onclick="setHousing('none')">指定なし</button>
+          <button data-v="own_loan" onclick="setHousing('own_loan')">持ち家（ローン）</button>
+          <button data-v="rent" onclick="setHousing('rent')">賃貸</button>
+        </div>
+      </div>
+    </div>
+    <div class="num-grid" id="housing-own" style="display:none">
+      <div class="num-field"><label>住宅ローン 年間返済額</label><div class="wrap"><input type="number" id="i-loanAnnual" value="120" min="0" max="600" step="6"><span class="unit">万円</span></div></div>
+      <div class="num-field"><label>ローン完済時のご本人の年齢</label><div class="wrap"><input type="number" id="i-loanUntilAge" value="65" min="30" max="90"><span class="unit">歳</span></div></div>
+    </div>
+    <div class="num-grid" id="housing-rent" style="display:none">
+      <div class="num-field"><label>毎月の家賃</label><div class="wrap"><input type="number" id="i-rentMonthly" value="10" min="0" max="50" step="0.5"><span class="unit">万円</span></div></div>
+      <div class="num-field"><label>賃貸はご本人の何歳まで</label><div class="wrap"><input type="number" id="i-rentUntilAge" value="90" min="30" max="105"><span class="unit">歳</span></div></div>
+    </div>
+
+    <div class="section-title">お子様の進路（教育費を自動算入）<button class="preset-btn" onclick="addChild()">＋ お子様を追加</button></div>
+    <div id="children-list"></div>
+
+    <div class="section-title">その他のライフイベント</div>
     <div class="events-list" id="events-list"></div>
+    <div class="event-grouplabel">支出イベント</div>
     <div class="add-event">
-      <button onclick="addEvent('住宅購入', 'expense', 3000, 1)">+ 住宅購入</button>
-      <button onclick="addEvent('教育費', 'expense', 200, 5)">+ 教育費</button>
-      <button onclick="addEvent('車購入', 'expense', 300, 1)">+ 車購入</button>
-      <button onclick="addEvent('リフォーム', 'expense', 500, 1)">+ リフォーム</button>
-      <button onclick="addEvent('介護費', 'expense', 120, 5)">+ 介護費</button>
+      <button onclick="addEvent('住宅購入(頭金・諸費用)', 'expense', 800, 1)">+ 住宅購入</button>
+      <button onclick="addEvent('リフォーム', 'expense', 500, 1, 15)">+ リフォーム(15年周期)</button>
+      <button onclick="addEvent('車の買い替え', 'expense', 250, 1, 8)">+ 車の買い替え(8年周期)</button>
+      <button onclick="addEvent('結婚資金援助', 'expense', 200, 1)">+ 結婚援助</button>
+      <button onclick="addEvent('親の介護費', 'expense', 100, 5)">+ 親の介護費</button>
+      <button onclick="addEvent('ご自身の介護費', 'expense', 120, 5)">+ 自身の介護費</button>
+      <button onclick="addEvent('旅行・趣味', 'expense', 50, 10, 1)">+ 旅行・趣味(毎年)</button>
       <button onclick="addEvent('その他支出', 'expense', 100, 1)">+ その他支出</button>
+    </div>
+    <div class="event-grouplabel">収入イベント</div>
+    <div class="add-event">
       <button onclick="addEvent('相続', 'income', 1000, 1)">+ 相続</button>
       <button onclick="addEvent('贈与受領', 'income', 300, 1)">+ 贈与受領</button>
-      <button onclick="addEvent('保険満期', 'income', 500, 1)">+ 保険満期</button>
+      <button onclick="addEvent('保険満期金', 'income', 500, 1)">+ 保険満期</button>
+      <button onclick="addEvent('iDeCo・退職一時金', 'income', 400, 1)">+ iDeCo等</button>
       <button onclick="addEvent('その他収入', 'income', 100, 1)">+ その他収入</button>
     </div>
+  </div>
+
+  <!-- ===== 診断 ===== -->
+  <div class="diag-box" id="diag-box">
+    <h3>シミュレーション診断</h3>
+    <ul id="diag-list"></ul>
   </div>
 
   <!-- サマリーカード -->
@@ -213,14 +331,14 @@
   <!-- グラフ -->
   <div class="section chart-section">
     <h3>資産残高の推移</h3>
-    <div class="chart-note">縦線は退職年齢、年金受給開始年齢、主要なライフイベントを示します。</div>
+    <div class="chart-note">縦線は退職年齢・年金受給開始年齢、点はお子様の大学入学などの主要イベントを示します。</div>
     <svg id="chart" class="chart-svg" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid meet"></svg>
   </div>
 
   <!-- テーブル -->
   <div class="section">
     <h3 style="font-family: 'Yu Mincho', serif; font-size: 16px; color: #1a2744; margin: 0 0 4px 0; font-weight: 600;">年次キャッシュフロー（単位: 万円）</h3>
-    <div class="chart-note">黄色＝ライフイベント発生年、赤色＝赤字年、薄黄＝退職年。</div>
+    <div class="chart-note">黄色＝ライフイベント／教育費発生年、赤色＝資産マイナス年、薄ベージュ＝退職年。</div>
     <div class="view-toggle no-print">
       <button id="view-all" class="active" onclick="setView('all')">全年次</button>
       <button id="view-key" onclick="setView('key')">5歳刻み＋イベント年</button>
@@ -230,17 +348,36 @@
         <thead>
           <tr>
             <th>年齢</th>
-            <th>給与</th>
+            <th>給与等</th>
             <th>年金</th>
-            <th>一時収入</th>
-            <th>基本支出</th>
-            <th>一時支出</th>
+            <th>臨時収入</th>
+            <th>生活費</th>
+            <th>住宅</th>
+            <th>教育</th>
+            <th>臨時支出</th>
             <th>収支</th>
             <th>残高</th>
           </tr>
         </thead>
         <tbody id="cf-rows"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- 出典 -->
+  <div class="section">
+    <div class="source-box">
+      <h4>本シミュレーションが用いる公的データ・出典</h4>
+      <dl>
+        <dt>教育費（公立／私立）</dt>
+        <dd>文部科学省「子供の学習費調査」（令和3年度）、私立大学等の初年度学生納付金（文部科学省）、日本政策金融公庫「教育費負担の実態調査」</dd>
+        <dt>生活費の全国平均</dt>
+        <dd>総務省統計局「家計調査」（2023年・二人以上世帯／単身世帯／高齢無職世帯の消費支出）</dd>
+        <dt>年金のモデル額</dt>
+        <dd>厚生労働省「令和6年度の年金額改定」モデル年金、国民年金（基礎年金）満額</dd>
+        <dt>住宅</dt>
+        <dd>住宅金融支援機構「フラット35利用者調査」等（返済額・諸費用の目安）</dd>
+      </dl>
     </div>
   </div>
 
@@ -267,7 +404,7 @@
   </div>
 
   <div class="footer">
-    <p>※ 本シミュレーションは概算であり、税金・社会保険料・医療費等の変動、ご家族構成の変化等は含まれません。</p>
+    <p>※ 本シミュレーションは公的統計の平均値に基づく概算であり、税金・社会保険料・医療費等の変動、ご家族構成の変化等を完全には反映していません。</p>
     <p>※ 詳細なライフプラン設計はCFP®認定者による個別相談をおすすめします。</p>
   </div>
 </div>
@@ -287,34 +424,148 @@ const FIRM_INFO = {
   consultationHeadline: "この結果について、より詳しくご相談いただけます",
   consultationLead: "初回相談は60分・無料です。シミュレーション結果を踏まえ、ご家族構成・資産・お考えに合わせた個別のライフプラン設計をいたします。",
 };
+
 // ============================================================
+//  ◆◆◆ 公的データ定数（年度更新が必要） ◆◆◆
+// ============================================================
+// 教育費：文部科学省「子供の学習費調査」（令和3年度）等。単位＝万円・在学期間合計。
+const EDU = {
+  kindergarten: { public: 49,  private: 158 },   // 3年間
+  elementary:   { public: 211, private: 1000 },  // 6年間
+  junior:       { public: 161, private: 430 },   // 3年間
+  senior:       { public: 154, private: 315 },   // 3年間
+  univ: {                                        // 4年間・学費のみ
+    national_home:    244, national_away:    524,
+    private_lib_home: 396, private_lib_away: 676,
+    private_sci_home: 544, private_sci_away: 824,
+    private_med_home:2500, private_med_away:2780,
+  },
+};
+// 生活費：総務省「家計調査」2023（年間・万円）。世帯人数別の消費支出 概算。
+const LIVING = {
+  active: { 1: 200, 2: 290, 3: 330, 4: 360, 5: 390 }, // 現役（人数別）
+  retired: { single: 190, couple: 300 },               // 退職後（高齢無職世帯）
+};
+// 年金：厚労省 令和6年度モデル年金（年額・万円）概算。
+const PENSION_MODEL = {
+  self: 180,        // 会社員（厚生年金＋基礎）単身モデル
+  spouseBasic: 80,  // 配偶者の国民年金（基礎年金）満額相当
+};
 
 // 状態
 const state = {
-  currentAge: 55, lifeExpectancy: 90,
-  annualIncome: 700, retireAge: 65, retirementBonus: 1500,
+  currentAge: 40, lifeExpectancy: 90,
+  hasSpouse: true, spouseAge: 38,
+  annualIncome: 500, retireAge: 65, retirementBonus: 1500,
   postRetirementIncome: 200, postRetirementUntil: 70,
-  pensionAge: 65, pensionAmount: 220,
-  currentAssets: 2000, returnRate: 2.0,
-  activeExpense: 420, retiredExpense: 320, inflationRate: 2.0,
+  pensionAge: 65, pensionAmount: 180,
+  spouseIncome: 120, spouseRetireAge: 65, spousePensionAge: 65, spousePension: 80,
+  currentAssets: 800, returnRate: 2.0,
+  activeExpense: 320, retiredExpense: 280, inflationRate: 1.5,
+  housingMode: 'none', loanAnnual: 120, loanUntilAge: 65, rentMonthly: 10, rentUntilAge: 90,
+  children: [],
   events: [],
-  view: 'all', // 'all' or 'key'
+  view: 'all',
 };
 let nextEventId = 1;
+let nextChildId = 1;
 
-const fmt = (v) => v.toLocaleString();
-const fmtSign = (v) => (v >= 0 ? '+' : '') + v.toLocaleString();
+// スライダー項目の単位（数字入力欄の右に表示）
+const STEP_UNIT = {
+  currentAge: '歳', lifeExpectancy: '歳',
+  annualIncome: '万円', retireAge: '歳', retirementBonus: '万円',
+  postRetirementIncome: '万円', postRetirementUntil: '歳',
+  pensionAge: '歳', pensionAmount: '万円',
+  currentAssets: '万円', returnRate: '%',
+  activeExpense: '万円', retiredExpense: '万円', inflationRate: '%',
+};
 
-// イベント追加
-function addEvent(name, category, amount, years) {
-  const startAge = state.currentAge + 5;
-  state.events.push({
-    id: nextEventId++,
-    name, category,
-    startAge,
-    endAge: startAge + years - 1,
-    annualAmount: amount,
+// 各スライダーの隣に「− 数字入力 ＋」を生成し、スライダーと双方向連動させる
+function buildSteppers() {
+  Object.keys(STEP_UNIT).forEach((key) => {
+    const slider = document.getElementById('i-' + key);
+    const disp = document.getElementById('d-' + key);
+    if (!slider || !disp) return;
+    const step = parseFloat(slider.step) || 1;
+    const min = parseFloat(slider.min);
+    const max = parseFloat(slider.max);
+    const dec = step < 1 ? 1 : 0;
+    disp.innerHTML =
+      `<span class="stepper">` +
+        `<button type="button" aria-label="${key} を減らす">−</button>` +
+        `<input type="number" id="n-${key}" min="${min}" max="${max}" step="${step}" inputmode="decimal">` +
+        `<span class="su">${STEP_UNIT[key]}</span>` +
+        `<button type="button" aria-label="${key} を増やす">＋</button>` +
+      `</span>`;
+    const numEl = document.getElementById('n-' + key);
+    const buttons = disp.querySelectorAll('button');
+
+    const commit = (raw) => {
+      let v = parseFloat(raw);
+      if (isNaN(v)) v = state[key];
+      v = Math.min(max, Math.max(min, v));
+      v = Math.round(v / step) * step;
+      v = parseFloat(v.toFixed(dec));
+      state[key] = v;
+      if (key === 'retireAge' && state.postRetirementUntil < state.retireAge) state.postRetirementUntil = state.retireAge;
+      slider.value = v;
+      numEl.value = v.toFixed(dec);
+      render();
+    };
+    buttons[0].addEventListener('click', () => commit((parseFloat(numEl.value) || state[key]) - step));
+    buttons[1].addEventListener('click', () => commit((parseFloat(numEl.value) || state[key]) + step));
+    numEl.addEventListener('change', () => commit(numEl.value));
+    numEl.value = Number(state[key]).toFixed(dec);
   });
+}
+
+const fmt = (v) => Math.round(v).toLocaleString();
+const fmtSign = (v) => (v >= 0 ? '+' : '') + Math.round(v).toLocaleString();
+
+// ---- 子供の年齢→当年の教育費（万円） ----
+function eduCostForAge(child, a) {
+  const C = EDU;
+  if (a >= 3 && a <= 5)   return child.kg === 'skip'   ? 0 : Math.round(C.kindergarten[child.kg] / 3);
+  if (a >= 6 && a <= 11)  return child.el === 'skip'   ? 0 : Math.round(C.elementary[child.el] / 6);
+  if (a >= 12 && a <= 14) return child.jh === 'skip'   ? 0 : Math.round(C.junior[child.jh] / 3);
+  if (a >= 15 && a <= 17) return child.sh === 'skip'   ? 0 : Math.round(C.senior[child.sh] / 3);
+  if (a >= 18 && a <= 21) return child.univ === 'skip' ? 0 : Math.round((C.univ[child.univ] || 0) / 4);
+  return 0;
+}
+function eduStageLabel(a) {
+  if (a === 3)  return '幼稚園入園';
+  if (a === 6)  return '小学校入学';
+  if (a === 12) return '中学入学';
+  if (a === 15) return '高校入学';
+  if (a === 18) return '大学入学';
+  return '';
+}
+
+// ---- 子供 操作 ----
+function addChild() {
+  if (state.children.length >= 5) return;
+  state.children.push({
+    id: nextChildId++, age: 0,
+    kg: 'public', el: 'public', jh: 'public', sh: 'public', univ: 'national_home',
+  });
+  render();
+}
+function deleteChild(id) {
+  state.children = state.children.filter((c) => c.id !== id);
+  render();
+}
+function updateChild(id, field, value) {
+  const c = state.children.find((x) => x.id === id);
+  if (!c) return;
+  c[field] = (field === 'age') ? Number(value) : value;
+  render();
+}
+
+// ---- イベント 操作 ----
+function addEvent(name, category, amount, years, interval = 0) {
+  const startAge = state.currentAge + 5;
+  const endAge = interval > 0 ? state.lifeExpectancy : startAge + years - 1;
+  state.events.push({ id: nextEventId++, name, category, startAge, endAge, annualAmount: amount, interval });
   render();
 }
 function deleteEvent(id) {
@@ -329,78 +580,140 @@ function updateEvent(id, field, value) {
   if (field === 'endAge' && e.endAge < e.startAge) e.startAge = e.endAge;
   render();
 }
+function eventActive(e, age) {
+  if (e.interval && e.interval > 0) {
+    return age >= e.startAge && age <= e.endAge && (age - e.startAge) % e.interval === 0;
+  }
+  return age >= e.startAge && age <= e.endAge;
+}
 
-// 年次計算
+// ---- セグメント切替 ----
+function setSpouse(v) {
+  state.hasSpouse = v;
+  document.querySelectorAll('#seg-spouse button').forEach((b) => b.classList.toggle('active', (b.dataset.v === '1') === v));
+  document.getElementById('spouse-age-field').style.visibility = v ? 'visible' : 'hidden';
+  document.getElementById('spouse-income-block').style.display = v ? 'block' : 'none';
+  render();
+}
+function setHousing(mode) {
+  state.housingMode = mode;
+  document.querySelectorAll('#seg-housing button').forEach((b) => b.classList.toggle('active', b.dataset.v === mode));
+  document.getElementById('housing-own').style.display = mode === 'own_loan' ? 'grid' : 'none';
+  document.getElementById('housing-rent').style.display = mode === 'rent' ? 'grid' : 'none';
+  render();
+}
+
+// ---- 公的データ プリセット ----
+function presetLiving() {
+  const n = Math.min(5, 1 + (state.hasSpouse ? 1 : 0) + state.children.length);
+  state.activeExpense = LIVING.active[n] || LIVING.active[5];
+  state.retiredExpense = state.hasSpouse ? LIVING.retired.couple : LIVING.retired.single;
+  document.getElementById('i-activeExpense').value = state.activeExpense;
+  document.getElementById('i-retiredExpense').value = state.retiredExpense;
+  render();
+}
+function presetPension(who) {
+  if (who === 'self') {
+    state.pensionAmount = PENSION_MODEL.self;
+    document.getElementById('i-pensionAmount').value = state.pensionAmount;
+  } else {
+    state.spousePension = PENSION_MODEL.spouseBasic;
+    document.getElementById('i-spousePension').value = state.spousePension;
+  }
+  render();
+}
+
+// ============================================================
+//  年次計算
+// ============================================================
 function calculate() {
   const arr = [];
-  let assets = state.currentAssets * 10000;
+  let assets = state.currentAssets;
   const r = state.returnRate / 100;
   const inf = state.inflationRate / 100;
 
   for (let age = state.currentAge; age <= state.lifeExpectancy; age++) {
     const yrs = age - state.currentAge;
+    const spouseAge = state.spouseAge + yrs;
 
-    // 給与収入
+    // --- 収入：給与等（本人＋配偶者就労） ---
     let workIncome = 0;
-    if (age < state.retireAge) workIncome = state.annualIncome * 10000;
-    else if (age < state.postRetirementUntil) workIncome = state.postRetirementIncome * 10000;
+    if (age < state.retireAge) workIncome += state.annualIncome;
+    else if (age < state.postRetirementUntil) workIncome += state.postRetirementIncome;
+    if (state.hasSpouse && spouseAge < state.spouseRetireAge) workIncome += state.spouseIncome;
 
-    // 年金
-    const pension = age >= state.pensionAge ? state.pensionAmount * 10000 : 0;
+    // --- 年金（本人＋配偶者） ---
+    let pension = 0;
+    if (age >= state.pensionAge) pension += state.pensionAmount;
+    if (state.hasSpouse && spouseAge >= state.spousePensionAge) pension += state.spousePension;
 
-    // 一時収入（退職金＋イベント）
+    // --- 臨時収入（退職金＋収入イベント） ---
     let eventIncome = 0;
-    if (age === state.retireAge) eventIncome += state.retirementBonus * 10000;
+    const labels = [];
+    if (age === state.retireAge) { eventIncome += state.retirementBonus; labels.push('退職金'); }
     state.events.forEach((e) => {
-      if (e.category === 'income' && age >= e.startAge && age <= e.endAge) {
-        eventIncome += e.annualAmount * 10000;
+      if (e.category === 'income' && eventActive(e, age)) { eventIncome += e.annualAmount; labels.push(e.name); }
+    });
+
+    // --- 生活費（インフレ調整） ---
+    const baseRaw = age < state.retireAge ? state.activeExpense : state.retiredExpense;
+    const living = baseRaw * Math.pow(1 + inf, yrs);
+
+    // --- 住宅費 ---
+    let housing = 0;
+    if (state.housingMode === 'own_loan' && age < state.loanUntilAge) housing = state.loanAnnual;
+    else if (state.housingMode === 'rent' && age <= state.rentUntilAge) housing = state.rentMonthly * 12;
+
+    // --- 教育費（子供ごと） ---
+    let edu = 0;
+    state.children.forEach((c) => {
+      const childAge = c.age + yrs;
+      const cost = eduCostForAge(c, childAge);
+      if (cost > 0) {
+        edu += cost;
+        const sl = eduStageLabel(childAge);
+        if (sl) labels.push(sl);
       }
     });
 
-    // 基本支出（インフレ調整）
-    const baseExpRaw = age < state.retireAge ? state.activeExpense : state.retiredExpense;
-    const baseExpense = baseExpRaw * 10000 * Math.pow(1 + inf, yrs);
-
-    // 一時支出（イベント、インフレ調整なし＝名目値）
+    // --- 臨時支出（支出イベント） ---
     let eventExpense = 0;
-    const eventLabels = [];
     state.events.forEach((e) => {
-      if (age >= e.startAge && age <= e.endAge) {
-        if (e.category === 'expense') {
-          eventExpense += e.annualAmount * 10000;
-          eventLabels.push(e.name);
-        } else if (age === e.startAge) {
-          eventLabels.push(e.name);
-        }
+      if (e.category === 'expense' && eventActive(e, age)) {
+        eventExpense += e.annualAmount;
+        if (e.interval > 0 || age === e.startAge) labels.push(e.name);
       }
     });
-    if (age === state.retireAge) eventLabels.unshift('退職金');
 
     const income = workIncome + pension + eventIncome;
-    const expense = baseExpense + eventExpense;
+    const expense = living + housing + edu + eventExpense;
     const net = income - expense;
     assets = (assets + net) * (1 + r);
 
     arr.push({
-      age,
-      workIncome: Math.round(workIncome / 10000),
-      pension: Math.round(pension / 10000),
-      eventIncome: Math.round(eventIncome / 10000),
-      baseExpense: Math.round(baseExpense / 10000),
-      eventExpense: Math.round(eventExpense / 10000),
-      income: Math.round(income / 10000),
-      expense: Math.round(expense / 10000),
-      net: Math.round(net / 10000),
+      age, spouseAge,
+      workIncome: Math.round(workIncome),
+      pension: Math.round(pension),
+      eventIncome: Math.round(eventIncome),
+      living: Math.round(living),
+      housing: Math.round(housing),
+      edu: Math.round(edu),
+      eventExpense: Math.round(eventExpense),
+      income: Math.round(income),
+      expense: Math.round(expense),
+      net: Math.round(net),
       assets: assets,
-      assetsMan: Math.round(assets / 10000),
-      eventLabels,
-      hasEvent: eventLabels.length > 0,
+      assetsMan: Math.round(assets),
+      labels,
+      hasEvent: labels.length > 0,
     });
   }
   return arr;
 }
 
-// グラフ
+// ============================================================
+//  グラフ
+// ============================================================
 function drawChart(data) {
   const svg = document.getElementById('chart');
   const W = 1000, H = 360;
@@ -425,62 +738,54 @@ function drawChart(data) {
     '<stop offset="100%" stop-color="#b8973e" stop-opacity="0.05"/>' +
     '</linearGradient></defs>';
 
-  // Y軸グリッド
   for (let i = 0; i <= 5; i++) {
     const v = yMin + (yMax - yMin) * i / 5;
     const y = yScale(v);
     html += `<line x1="${PAD.left}" y1="${y}" x2="${W - PAD.right}" y2="${y}" stroke="#e0d8cc" stroke-dasharray="2 4"/>`;
-    html += `<text x="${PAD.left - 8}" y="${y + 3}" text-anchor="end" font-size="10" fill="#5a5a5a">${Math.round(v / 10000).toLocaleString()}万</text>`;
+    html += `<text x="${PAD.left - 8}" y="${y + 3}" text-anchor="end" font-size="10" fill="#5a5a5a">${fmt(v).toLocaleString()}万</text>`;
   }
-
-  // X軸
   for (let a = Math.ceil(xMin / 5) * 5; a <= xMax; a += 5) {
     const x = xScale(a);
     html += `<line x1="${x}" y1="${H - PAD.bottom}" x2="${x}" y2="${H - PAD.bottom + 4}" stroke="#5a5a5a"/>`;
     html += `<text x="${x}" y="${H - PAD.bottom + 18}" text-anchor="middle" font-size="11" fill="#5a5a5a">${a}歳</text>`;
   }
 
-  // 面エリア
   const top = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xScale(d.age)} ${yScale(d.assets)}`).join(' ');
   const areaPath = `${top} L ${xScale(xMax)} ${yScale(yMin)} L ${xScale(xMin)} ${yScale(yMin)} Z`;
   html += `<path d="${areaPath}" fill="url(#gradient)"/>`;
   html += `<path d="${top}" fill="none" stroke="#b8973e" stroke-width="2"/>`;
 
-  // ゼロライン
   if (yMin < 0) {
     const y0 = yScale(0);
     html += `<line x1="${PAD.left}" y1="${y0}" x2="${W - PAD.right}" y2="${y0}" stroke="#a85a3a" stroke-dasharray="3 3"/>`;
   }
-
-  // 退職年齢
   if (state.retireAge >= xMin && state.retireAge <= xMax) {
     const x = xScale(state.retireAge);
     html += `<line x1="${x}" y1="${PAD.top}" x2="${x}" y2="${H - PAD.bottom}" stroke="#1a2744" stroke-dasharray="4 4" stroke-width="1.5"/>`;
     html += `<text x="${x}" y="${PAD.top - 4}" text-anchor="middle" font-size="11" fill="#1a2744" font-weight="600">退職</text>`;
   }
-  // 年金開始
   if (state.pensionAge >= xMin && state.pensionAge <= xMax && state.pensionAge !== state.retireAge) {
     const x = xScale(state.pensionAge);
     html += `<line x1="${x}" y1="${PAD.top + 16}" x2="${x}" y2="${H - PAD.bottom}" stroke="#b8973e" stroke-dasharray="4 4" stroke-width="1.5"/>`;
     html += `<text x="${x}" y="${PAD.top + 12}" text-anchor="middle" font-size="11" fill="#b8973e" font-weight="600">年金</text>`;
   }
-  // 主要イベント点
-  state.events.forEach((e) => {
-    if (e.startAge >= xMin && e.startAge <= xMax) {
-      const x = xScale(e.startAge);
-      const color = e.category === 'expense' ? '#a85a3a' : '#5a7a4f';
-      html += `<circle cx="${x}" cy="${PAD.top + 6}" r="3" fill="${color}"/>`;
+  // お子様の大学入学（18歳）を点で
+  state.children.forEach((c) => {
+    const univYearAge = state.currentAge + (18 - c.age);
+    if (c.univ !== 'skip' && univYearAge >= xMin && univYearAge <= xMax) {
+      const x = xScale(univYearAge);
+      html += `<circle cx="${x}" cy="${PAD.top + 6}" r="3" fill="#4a7c9b"/>`;
     }
   });
 
-  // 軸線
   html += `<line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
   html += `<line x1="${PAD.left}" y1="${H - PAD.bottom}" x2="${W - PAD.right}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
-
   svg.innerHTML = html;
 }
 
-// テーブル
+// ============================================================
+//  テーブル
+// ============================================================
 function drawTable(data) {
   let rows = data;
   if (state.view === 'key') {
@@ -489,22 +794,22 @@ function drawTable(data) {
       d.age === state.pensionAge || d.age === state.lifeExpectancy || d.hasEvent || d.assets < 0
     );
   }
-
   const tbody = document.getElementById('cf-rows');
   tbody.innerHTML = rows.map((d) => {
     let cls = '';
     if (d.assets < 0) cls = 'deficit-year';
     else if (d.age === state.retireAge) cls = 'retire-year';
     else if (d.hasEvent) cls = 'event-year';
-
-    const tag = d.eventLabels.length > 0 ? `<span class="row-tag">${d.eventLabels.join('・')}</span>` : '';
-
+    const uniq = [...new Set(d.labels)];
+    const tag = uniq.length > 0 ? `<span class="row-tag">${uniq.join('・')}</span>` : '';
     return `<tr class="${cls}">
       <td>${d.age}歳${tag}</td>
       <td class="pos">${d.workIncome > 0 ? fmt(d.workIncome) : '-'}</td>
       <td class="pos">${d.pension > 0 ? fmt(d.pension) : '-'}</td>
       <td class="pos">${d.eventIncome > 0 ? fmt(d.eventIncome) : '-'}</td>
-      <td class="neg">${fmt(d.baseExpense)}</td>
+      <td class="neg">${fmt(d.living)}</td>
+      <td class="neg">${d.housing > 0 ? fmt(d.housing) : '-'}</td>
+      <td class="neg">${d.edu > 0 ? fmt(d.edu) : '-'}</td>
       <td class="neg">${d.eventExpense > 0 ? fmt(d.eventExpense) : '-'}</td>
       <td class="${d.net >= 0 ? 'pos' : 'neg'}">${fmtSign(d.net)}</td>
       <td class="balance ${d.assets < 0 ? 'negative' : ''}">${fmt(d.assetsMan)}</td>
@@ -512,11 +817,51 @@ function drawTable(data) {
   }).join('');
 }
 
-// イベントリスト
+// ============================================================
+//  子供リスト UI
+// ============================================================
+function renderChildren() {
+  const list = document.getElementById('children-list');
+  if (state.children.length === 0) {
+    list.innerHTML = '<div class="events-empty">「＋ お子様を追加」で教育費を自動算入します（公立／私立・進路を選択）。お子様がいない場合は不要です。</div>';
+    return;
+  }
+  const univOpts = [
+    ['national_home', '国公立・自宅'], ['national_away', '国公立・自宅外'],
+    ['private_lib_home', '私立文系・自宅'], ['private_lib_away', '私立文系・自宅外'],
+    ['private_sci_home', '私立理系・自宅'], ['private_sci_away', '私立理系・自宅外'],
+    ['private_med_home', '私立医歯薬・自宅'], ['private_med_away', '私立医歯薬・自宅外'],
+    ['skip', '進学しない'],
+  ];
+  const pubPriv = (v) => `<option value="public"${v==='public'?' selected':''}>公立</option><option value="private"${v==='private'?' selected':''}>私立</option><option value="skip"${v==='skip'?' selected':''}>なし</option>`;
+  list.innerHTML = state.children.map((c, i) => {
+    let lifeTotal = 0;
+    for (let a = Math.max(c.age, 3); a <= 21; a++) lifeTotal += eduCostForAge(c, a);
+    return `
+    <div class="child-card">
+      <div class="child-head">
+        <strong>お子様 ${i + 1}　（教育費 合計 約${fmt(lifeTotal)}万円）</strong>
+        <button class="del-child" onclick="deleteChild(${c.id})">削除</button>
+      </div>
+      <div class="edu-grid">
+        <div class="num-field"><label>現在の年齢</label><div class="wrap"><input type="number" value="${c.age}" min="0" max="22" onchange="updateChild(${c.id}, 'age', this.value)"><span class="unit">歳</span></div></div>
+        <div class="num-field"><label>幼稚園</label><select onchange="updateChild(${c.id}, 'kg', this.value)"><option value="public"${c.kg==='public'?' selected':''}>公立</option><option value="private"${c.kg==='private'?' selected':''}>私立</option><option value="skip"${c.kg==='skip'?' selected':''}>なし</option></select></div>
+        <div class="num-field"><label>小学校</label><select onchange="updateChild(${c.id}, 'el', this.value)">${pubPriv(c.el)}</select></div>
+        <div class="num-field"><label>中学校</label><select onchange="updateChild(${c.id}, 'jh', this.value)">${pubPriv(c.jh)}</select></div>
+        <div class="num-field"><label>高校</label><select onchange="updateChild(${c.id}, 'sh', this.value)">${pubPriv(c.sh)}</select></div>
+        <div class="num-field wide"><label>大学</label><select onchange="updateChild(${c.id}, 'univ', this.value)">${univOpts.map(([v,l]) => `<option value="${v}"${c.univ===v?' selected':''}>${l}</option>`).join('')}</select></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+//  イベントリスト UI
+// ============================================================
 function renderEvents() {
   const list = document.getElementById('events-list');
   if (state.events.length === 0) {
-    list.innerHTML = '<div class="events-empty">下のボタンからライフイベントを追加できます（住宅購入・教育費・介護費など）</div>';
+    list.innerHTML = '<div class="events-empty">下のボタンからライフイベントを追加できます。周期欄に数字を入れると「○年ごと」（車の買い替え等）になります。</div>';
     return;
   }
   list.innerHTML = state.events.map((e) => `
@@ -524,21 +869,20 @@ function renderEvents() {
       <input type="text" value="${e.name}" onchange="updateEvent(${e.id}, 'name', this.value)">
       <div class="age-cell"><input type="number" value="${e.startAge}" min="${state.currentAge}" max="${state.lifeExpectancy}" onchange="updateEvent(${e.id}, 'startAge', this.value)"> 歳〜</div>
       <div class="age-cell"><input type="number" value="${e.endAge}" min="${state.currentAge}" max="${state.lifeExpectancy}" onchange="updateEvent(${e.id}, 'endAge', this.value)"> 歳</div>
-      <div class="age-cell"><input type="number" value="${e.annualAmount}" onchange="updateEvent(${e.id}, 'annualAmount', this.value)"> 万円${e.endAge > e.startAge ? '/年' : ''}</div>
+      <div class="age-cell"><input type="number" value="${e.annualAmount}" onchange="updateEvent(${e.id}, 'annualAmount', this.value)"> 万円</div>
+      <div class="age-cell"><input type="number" value="${e.interval}" min="0" max="30" title="0=毎年/単発、数字=○年ごと" onchange="updateEvent(${e.id}, 'interval', this.value)"> 年毎</div>
       <button class="delete-btn" onclick="deleteEvent(${e.id})" title="削除">×</button>
     </div>
   `).join('');
 }
 
-// サマリー
+// ============================================================
+//  サマリー＆診断
+// ============================================================
 function renderStats(data) {
   const final = data[data.length - 1];
-  let peak = data[0];
-  let bottom = data[0];
-  data.forEach((d) => {
-    if (d.assets > peak.assets) peak = d;
-    if (d.assets < bottom.assets) bottom = d;
-  });
+  let peak = data[0], bottom = data[0];
+  data.forEach((d) => { if (d.assets > peak.assets) peak = d; if (d.assets < bottom.assets) bottom = d; });
 
   const finalEl = document.getElementById('stat-final');
   finalEl.textContent = `${final.assetsMan >= 0 ? '+' : ''}${fmt(final.assetsMan)}万`;
@@ -549,7 +893,7 @@ function renderStats(data) {
   document.getElementById('stat-peak-sub').textContent = `${peak.age}歳時点`;
 
   const bottomEl = document.getElementById('stat-bottom');
-  bottomEl.textContent = `${bottom.assetsMan >= 0 ? '' : ''}${fmt(bottom.assetsMan)}万`;
+  bottomEl.textContent = `${fmt(bottom.assetsMan)}万`;
   bottomEl.className = 'stat-value' + (bottom.assetsMan < 0 ? ' negative' : '');
   const deficitYear = data.find((d) => d.assets < 0);
   document.getElementById('stat-bottom-sub').textContent = deficitYear
@@ -557,33 +901,70 @@ function renderStats(data) {
     : `${bottom.age}歳時点`;
 }
 
-// 描画
-function render() {
-  // 入力値表示
-  document.getElementById('d-currentAge').textContent = `${state.currentAge}歳`;
-  document.getElementById('d-lifeExpectancy').textContent = `${state.lifeExpectancy}歳`;
-  document.getElementById('d-annualIncome').textContent = `${state.annualIncome}万円`;
-  document.getElementById('d-retireAge').textContent = `${state.retireAge}歳`;
-  document.getElementById('d-retirementBonus').textContent = `${fmt(state.retirementBonus)}万円`;
-  document.getElementById('d-postRetirementIncome').textContent = `${state.postRetirementIncome}万円`;
-  document.getElementById('d-postRetirementUntil').textContent = `${state.postRetirementUntil}歳まで`;
-  document.getElementById('d-pensionAge').textContent = `${state.pensionAge}歳`;
-  document.getElementById('d-pensionAmount').textContent = `${state.pensionAmount}万円`;
-  document.getElementById('d-currentAssets').textContent = `${fmt(state.currentAssets)}万円`;
-  document.getElementById('d-returnRate').textContent = `${state.returnRate.toFixed(1)}%`;
-  document.getElementById('d-activeExpense').textContent = `${state.activeExpense}万円`;
-  document.getElementById('d-retiredExpense').textContent = `${state.retiredExpense}万円`;
-  document.getElementById('d-inflationRate').textContent = `${state.inflationRate.toFixed(1)}%`;
+function renderDiagnosis(data) {
+  const box = document.getElementById('diag-box');
+  const ul = document.getElementById('diag-list');
+  const final = data[data.length - 1];
+  const deficit = data.find((d) => d.assets < 0);
+  const lines = [];
 
+  if (deficit) {
+    box.classList.add('alert');
+    lines.push(['⚠', `現在の計画では <strong>${deficit.age}歳で金融資産がマイナス</strong>になる試算です。収入の確保・支出の見直し・資産運用の検討が必要です。`]);
+  } else {
+    box.classList.remove('alert');
+    lines.push(['✓', `想定寿命（${state.lifeExpectancy}歳）まで資産は枯渇しない試算です。最終残高は <strong>${fmt(final.assetsMan)}万円</strong>。`]);
+  }
+
+  // 教育費のピーク
+  const eduYears = data.filter((d) => d.edu > 0);
+  if (eduYears.length > 0) {
+    const eduPeak = eduYears.reduce((m, d) => d.edu > m.edu ? d : m, eduYears[0]);
+    const eduTotal = data.reduce((s, d) => s + d.edu, 0);
+    lines.push(['🎓', `教育費は総額 <strong>約${fmt(eduTotal)}万円</strong>。ピークは ${eduPeak.age}歳前後（年間 約${fmt(eduPeak.edu)}万円）で、この時期の家計負担にご注意ください。`]);
+  }
+
+  // 退職直後の収支ギャップ
+  const atRetire = data.find((d) => d.age === state.retireAge);
+  const gapYear = data.find((d) => d.age >= state.retireAge && d.net < 0);
+  if (gapYear) {
+    lines.push(['📉', `退職後は年金開始までの期間に収支が赤字になりやすい試算です（例：${gapYear.age}歳で年間 ${fmt(gapYear.net)}万円）。退職金・貯蓄の取り崩しで備えます。`]);
+  }
+
+  // 黒字寿命
+  if (!deficit) {
+    lines.push(['🛟', `年金・資産運用（利回り${state.returnRate.toFixed(1)}%想定）を前提とした概算です。利回りや生活費の前提を変えると結果が大きく変わります。スライダーで感応度をご確認ください。`]);
+  }
+
+  ul.innerHTML = lines.map(([ic, t]) => `<li><span class="ic">${ic}</span><span>${t}</span></li>`).join('');
+}
+
+// ============================================================
+//  描画
+// ============================================================
+function render() {
+  // スライダー・数字入力・状態の同期
+  Object.keys(STEP_UNIT).forEach((k) => {
+    const slider = document.getElementById('i-' + k);
+    if (slider && document.activeElement !== slider) slider.value = state[k];
+    const num = document.getElementById('n-' + k);
+    if (num && document.activeElement !== num) {
+      const step = parseFloat(slider ? slider.step : 1) || 1;
+      const dec = step < 1 ? 1 : 0;
+      num.value = Number(state[k]).toFixed(dec);
+    }
+  });
+
+  renderChildren();
   renderEvents();
 
   const data = calculate();
   renderStats(data);
+  renderDiagnosis(data);
   drawChart(data);
   drawTable(data);
 }
 
-// 表示切替
 function setView(v) {
   state.view = v;
   document.getElementById('view-all').classList.toggle('active', v === 'all');
@@ -591,27 +972,26 @@ function setView(v) {
   drawTable(calculate());
 }
 
-// CSV出力
+// ---- CSV ----
 function exportCSV() {
   const data = calculate();
-  const headers = ['年齢', '給与', '年金', '一時収入', '基本支出', '一時支出', '収支', '残高', 'イベント'];
+  const headers = ['年齢', '給与等', '年金', '臨時収入', '生活費', '住宅', '教育', '臨時支出', '収支', '残高', 'イベント'];
   const rows = data.map((d) => [
-    d.age, d.workIncome, d.pension, d.eventIncome, d.baseExpense, d.eventExpense, d.net, d.assetsMan,
-    d.eventLabels.join('・'),
+    d.age, d.workIncome, d.pension, d.eventIncome, d.living, d.housing, d.edu, d.eventExpense, d.net, d.assetsMan,
+    [...new Set(d.labels)].join('・'),
   ]);
   const csv = headers.join(',') + '\n' + rows.map((r) => r.join(',')).join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `cashflow_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `lifeplan_${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
-// 連絡先
 function handleContact() {
   if (FIRM_INFO.contactUrl.startsWith('#')) {
     const t = document.querySelector(FIRM_INFO.contactUrl);
@@ -622,7 +1002,7 @@ function handleContact() {
   }
 }
 
-// 初期化
+// ---- 初期化 ----
 function init() {
   document.getElementById('print-firm-name').textContent = FIRM_INFO.name;
   document.getElementById('print-firm-subtitle').textContent = FIRM_INFO.subtitle;
@@ -637,7 +1017,10 @@ function init() {
   const today = new Date();
   document.getElementById('print-date').textContent = `作成日: ${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
 
-  // スライダーのイベント
+  // 数字入力＋増減ボタンを生成
+  buildSteppers();
+
+  // スライダー
   ['currentAge', 'lifeExpectancy', 'annualIncome', 'retireAge', 'retirementBonus',
    'postRetirementIncome', 'postRetirementUntil', 'pensionAge', 'pensionAmount',
    'currentAssets', 'returnRate', 'activeExpense', 'retiredExpense', 'inflationRate'
@@ -650,6 +1033,20 @@ function init() {
         if (k === 'retireAge' && state.postRetirementUntil < state.retireAge) state.postRetirementUntil = state.retireAge;
         render();
       });
+    }
+  });
+
+  // 数値入力（配偶者・住宅）
+  const numMap = {
+    'spouseAge': 'spouseAge', 'spouseIncome': 'spouseIncome', 'spouseRetireAge': 'spouseRetireAge',
+    'spousePensionAge': 'spousePensionAge', 'spousePension': 'spousePension',
+    'loanAnnual': 'loanAnnual', 'loanUntilAge': 'loanUntilAge', 'rentMonthly': 'rentMonthly', 'rentUntilAge': 'rentUntilAge',
+  };
+  Object.entries(numMap).forEach(([id, key]) => {
+    const el = document.getElementById('i-' + id);
+    if (el) {
+      el.value = state[key];
+      el.addEventListener('input', (e) => { state[key] = Number(e.target.value); render(); });
     }
   });
 
