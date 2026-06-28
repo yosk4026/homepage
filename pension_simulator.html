@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>公的年金 かんたん試算</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; background: #f8f5ef; color: #2c2c2c; line-height: 1.6; }
+  .serif { font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif; }
+  .container { max-width: 920px; margin: 0 auto; padding: 20px; }
+
+  .header { background: #ffffff; border-left: 3px solid #b8973e; padding: 28px 32px; margin-bottom: 20px; }
+  .header .tag { font-size: 11px; letter-spacing: 0.3em; color: #b8973e; font-weight: 600; margin-bottom: 8px; }
+  .header h1 { font-family: 'Yu Mincho', serif; font-size: 26px; color: #1a2744; margin: 0; letter-spacing: 0.05em; }
+  .header p { font-size: 13px; color: #5a5a5a; margin: 12px 0 0 0; line-height: 1.8; }
+  .header .fiscal { font-size: 11px; color: #8b6f3f; }
+
+  .privacy { padding: 10px 16px; margin-bottom: 20px; background: #f0ece4; border-left: 2px solid #5a7a4f; font-size: 11px; line-height: 1.7; display: flex; gap: 10px; }
+
+  .section { background: #ffffff; padding: 24px 28px; margin-bottom: 20px; }
+  .section-title { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; font-weight: 600; letter-spacing: 0.1em; margin: 20px 0 14px 0; padding-left: 10px; border-left: 2px solid #b8973e; }
+  .section-title:first-child { margin-top: 0; }
+
+  .birth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+  .num-field label { font-size: 11px; color: #5a5a5a; display: block; margin-bottom: 4px; }
+  .num-field input { width: 100%; padding: 8px 10px; border: 1px solid #e0d8cc; background: #fff; color: #1a2744; font-size: 14px; font-family: inherit; outline: none; }
+
+  .info-box { font-size: 11px; color: #5a5a5a; padding: 6px 10px; background: #f0ece4; border-left: 2px solid #d4b06a; margin-bottom: 20px; }
+  .info-box strong { color: #1a2744; }
+
+  .slider-row { margin-bottom: 14px; }
+  .slider-row .label-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .slider-row label { font-size: 11px; color: #5a5a5a; }
+  .slider-row .value { font-size: 13px; color: #1a2744; font-weight: 600; }
+  .slider-row input[type="range"] { width: 100%; -webkit-appearance: none; height: 6px; background: #e0d8cc; border-radius: 3px; outline: none; }
+  .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; background: #b8973e; border-radius: 50%; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+  .slider-row input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; background: #b8973e; border-radius: 50%; cursor: pointer; border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+
+  /* 数字入力＋増減ボタン（スライダーと連動） */
+  .stepper { display: inline-flex; align-items: center; gap: 5px; }
+  .stepper button { width: 32px; height: 32px; border: 1px solid #c9bca0; background: #fff; color: #1a2744; font-size: 20px; line-height: 1; cursor: pointer; border-radius: 7px; font-family: inherit; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .stepper button:hover { background: #f0ece4; }
+  .stepper button:active { background: #e6ddca; }
+  .stepper input { width: 80px; text-align: right; padding: 6px 8px; border: 1px solid #c9bca0; border-radius: 7px; font-size: 16px; font-family: inherit; color: #1a2744; font-weight: 600; -webkit-appearance: none; -moz-appearance: textfield; appearance: textfield; }
+  .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper input:focus { outline: none; border-color: #b8973e; background: #fffdf7; }
+  .stepper .su { font-size: 12px; color: #5a5a5a; min-width: 28px; }
+  .su2 { font-size: 11px; color: #5a5a5a; margin-left: 8px; }
+  .slider-row .label-row { align-items: center; flex-wrap: wrap; gap: 6px; }
+  .slider-row .label-row label { font-size: 12px; }
+
+  /* 出典（キャッシュフロー表と共通仕様） */
+  .source-box { background: #faf7f0; border: 1px solid #e0d8cc; border-radius: 6px; padding: 16px 20px; font-size: 11px; line-height: 1.9; color: #5a5a5a; }
+  .source-box h4 { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; margin: 0 0 8px 0; }
+  .source-box dt { font-weight: 700; color: #1a2744; margin-top: 6px; }
+  .source-box dd { margin: 0; }
+  .diag-box { background: linear-gradient(135deg, #ffffff 0%, #f6f2e8 100%); border: 1px solid #e0d8cc; border-left: 4px solid #5a7a4f; padding: 20px 24px; margin-bottom: 20px; }
+  .diag-box.alert { border-left-color: #a85a3a; }
+  .diag-box h3 { font-family: 'Yu Mincho', serif; font-size: 15px; color: #1a2744; margin: 0 0 10px 0; }
+  .diag-box ul { margin: 0; padding-left: 4px; list-style: none; }
+  .diag-box li { font-size: 13px; line-height: 1.9; color: #2c2c2c; display: flex; gap: 8px; }
+  .diag-box li .ic { flex-shrink: 0; }
+
+  .toggles { display: flex; gap: 12px; }
+  .toggle-btn { padding: 8px 16px; background: #fff; color: #1a2744; border: 1px solid #e0d8cc; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .toggle-btn.active { background: #1a2744; color: #fff; border-color: #1a2744; }
+
+  .note { font-size: 11px; color: #5a5a5a; }
+
+  .summary-box { background: #ffffff; padding: 20px 24px; margin-bottom: 20px; border-left: 2px solid #b8973e; }
+  .summary-box h3 { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; font-weight: 600; margin: 0 0 12px 0; letter-spacing: 0.1em; }
+  .summary-box table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .summary-box td { padding: 6px 0; }
+  .summary-box td:first-child { color: #5a5a5a; width: 38%; }
+  .summary-box td:last-child { color: #1a2744; font-weight: 500; }
+  .summary-box tr { border-bottom: 1px dotted #e0d8cc; }
+  .summary-box tr:last-child { border-bottom: none; }
+
+  .result-card { background: linear-gradient(135deg, #1a2744 0%, #243360 100%); color: #fff; padding: 32px; margin-bottom: 20px; position: relative; }
+  .result-card .corner { position: absolute; top: 16px; right: 24px; font-size: 10px; color: #d4b06a; letter-spacing: 0.2em; }
+  .result-card .label { font-family: 'Yu Mincho', serif; font-size: 13px; opacity: 0.85; margin-bottom: 6px; }
+  .result-card .amount-row { display: flex; align-items: baseline; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .result-card .amount-row .item-label { font-size: 11px; opacity: 0.7; }
+  .result-card .monthly-value { font-family: 'Yu Mincho', serif; font-size: 38px; font-weight: 600; color: #d4b06a; line-height: 1; }
+  .result-card .annual-value { font-family: 'Yu Mincho', serif; font-size: 24px; font-weight: 500; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.2); }
+  .result-card .unit-yen { font-size: 16px; margin-left: 4px; }
+  .result-card .unit-yen-small { font-size: 13px; margin-left: 4px; }
+  .breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.1); }
+  .breakdown-cell { background: rgba(0,0,0,0.15); padding: 14px 16px; }
+  .breakdown-cell .b-label { font-size: 10px; opacity: 0.7; margin-bottom: 4px; letter-spacing: 0.05em; }
+  .breakdown-cell .b-value { font-size: 17px; font-weight: 500; color: #d4b06a; font-family: 'Yu Mincho', serif; }
+  .breakdown-cell .b-value .b-unit { font-size: 11px; margin-left: 3px; opacity: 0.8; }
+  .breakdown-cell .b-monthly { font-size: 10px; opacity: 0.65; margin-top: 2px; }
+  .adjustment-note { margin-top: 20px; padding: 12px 16px; background: rgba(255,255,255,0.08); border-left: 2px solid #d4b06a; font-size: 13px; }
+
+  .chart-section h3 { font-family: 'Yu Mincho', serif; font-size: 16px; color: #1a2744; margin: 0 0 4px 0; font-weight: 600; letter-spacing: 0.05em; }
+  .chart-section .chart-note { font-size: 11px; color: #5a5a5a; margin-bottom: 16px; }
+  .chart-svg { width: 100%; height: auto; display: block; }
+  .legend-row { display: flex; gap: 20px; justify-content: center; margin-top: 8px; font-size: 11px; color: #5a5a5a; flex-wrap: wrap; }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: middle; }
+
+  .break-even-box { margin-top: 16px; padding: 10px 14px; background: #f0ece4; border-left: 2px solid #b8973e; font-size: 12px; line-height: 1.7; }
+  .break-even-box strong { color: #1a2744; }
+  .break-even-age { color: #8b6f3f; font-size: 14px; font-weight: 700; }
+
+  .working-result { margin-top: 16px; padding: 16px 20px; }
+  .working-result.suspended { background: #faeede; border-left: 3px solid #a85a3a; }
+  .working-result.ok { background: #e8efe2; border-left: 3px solid #5a7a4f; }
+  .working-result.none { background: #f0ece4; border-left: 3px solid #e0d8cc; }
+
+  .cta-section { background: linear-gradient(135deg, #ffffff 0%, #f0ece4 100%); border: 1px solid #e0d8cc; border-left: 4px solid #b8973e; padding: 28px 32px; margin-bottom: 20px; }
+  .cta-section h2 { font-family: 'Yu Mincho', serif; font-size: 18px; color: #1a2744; font-weight: 600; margin: 0 0 8px 0; }
+  .cta-section p { font-size: 13px; color: #2c2c2c; line-height: 1.8; margin: 0 0 20px 0; }
+  .cta-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { padding: 12px 24px; font-size: 14px; font-family: inherit; cursor: pointer; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 8px; border: none; }
+  .btn-primary { background: #1a2744; color: #fff; }
+  .btn-primary:hover { background: #243360; }
+  .btn-outline { background: transparent; color: #1a2744; border: 1px solid #1a2744; }
+  .btn-outline:hover { background: #1a2744; color: #fff; }
+
+  .footer { text-align: center; font-size: 10px; color: #5a5a5a; line-height: 1.9; padding: 20px 16px; border-top: 1px solid #e0d8cc; }
+
+  .print-only { display: none; }
+  .print-footer { background: #ffffff; border-top: 2px solid #b8973e; padding: 16px 20px; margin-top: 20px; font-size: 11px; line-height: 1.9; }
+  .print-footer h4 { font-family: 'Yu Mincho', serif; font-size: 14px; color: #1a2744; margin: 0 0 8px 0; font-weight: 700; }
+
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: white !important; }
+    .container { max-width: 100% !important; padding: 0 !important; }
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    .result-card { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .chart-section, .summary-box, .result-card { page-break-inside: avoid; }
+  }
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+    .header, .section, .result-card, .cta-section { padding: 20px; }
+    .result-card .monthly-value { font-size: 30px; }
+    .breakdown { grid-template-columns: 1fr; }
+    .header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- HPへ戻る -->
+  <div class="no-print" style="font-size: 11px; padding: 4px 0 16px; margin-bottom: 0; letter-spacing: 0.05em;">
+    <a href="../" style="color: #5a5a5a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#1a2744'" onmouseout="this.style.color='#5a5a5a'">← 行政書士 吉岡康生事務所</a>
+  </div>
+
+
+  <!-- 印刷用ヘッダー -->
+  <div class="print-only" style="border-bottom: 2px solid #1a2744; padding-bottom: 12px; margin-bottom: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+      <div>
+        <div class="serif" style="font-size: 18px; font-weight: 700; color: #1a2744;" id="print-firm-name"></div>
+        <div style="font-size: 11px; color: #8b6f3f; margin-top: 2px;" id="print-firm-subtitle"></div>
+      </div>
+      <div style="text-align: right; font-size: 10px; color: #5a5a5a;">
+        <div>公的年金 試算結果書</div>
+        <div id="print-date"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 画面ヘッダー -->
+  <div class="header no-print">
+    <div class="tag">LIFE PLAN TOOL — 02</div>
+    <h1>公的年金 かんたん試算</h1>
+    <p>老齢基礎年金・老齢厚生年金の概算と、繰上げ・繰下げ受給による月額の変化、損益分岐年齢を試算します。<br>
+    <span class="fiscal">※ 令和8年度（2026年度）の年金額に基づく簡易計算です。</span></p>
+  </div>
+
+  <div class="privacy no-print">
+    <span>🔒</span>
+    <span>入力された情報はお客様のブラウザ内でのみ処理され、当事務所のサーバーや外部に送信・保存されることはありません。</span>
+  </div>
+
+  <!-- 入力フォーム -->
+  <div class="section no-print">
+    <div class="section-title">基本情報</div>
+    <div class="birth-row">
+      <div class="num-field"><label>生年（西暦）</label><input type="number" id="i-birthYear" min="1930" max="2010" value="1965"></div>
+      <div class="num-field"><label>生月</label><input type="number" id="i-birthMonth" min="1" max="12" value="6"></div>
+    </div>
+    <div class="info-box" id="info-recipient"></div>
+
+    <div class="section-title">国民年金（基礎年金）</div>
+    <div class="slider-row"><div class="label-row"><label>国民年金 加入月数</label><span class="value" id="d-nationalMonths"></span></div><input type="range" id="i-nationalMonths" min="0" max="480" value="480"></div>
+    <div class="note">※ 20歳〜60歳までの最大40年（480ヶ月）。厚生年金加入期間も含めます。</div>
+
+    <div class="section-title">厚生年金（報酬比例部分）</div>
+    <div class="slider-row"><div class="label-row"><label>厚生年金 加入月数</label><span class="value" id="d-employeesMonths"></span></div><input type="range" id="i-employeesMonths" min="0" max="540" value="480"></div>
+    <div class="slider-row"><div class="label-row"><label>平均標準報酬月額（賞与含む月額換算）</label><span class="value" id="d-avgSalary"></span></div><input type="range" id="i-avgSalary" min="10" max="65" step="0.5" value="45.5"></div>
+
+    <div class="section-title">受給開始年齢</div>
+    <div class="slider-row"><div class="label-row"><label>受給を開始する年齢</label><span class="value" id="d-startAge"></span></div><input type="range" id="i-startAge" min="60" max="75" value="65"></div>
+
+    <div class="section-title">加給年金（配偶者）</div>
+    <div class="toggles">
+      <button class="toggle-btn" id="b-hasSpouse">配偶者あり</button>
+      <button class="toggle-btn" id="b-spouseUnder65" style="display:none">配偶者は65歳未満</button>
+    </div>
+    <div class="note" style="margin-top: 8px;">※ 配偶者加給年金は本人65歳〜配偶者65歳到達まで加算（要件あり・概算）</div>
+
+    <div class="section-title">世帯年金（配偶者ご自身の年金を合算）</div>
+    <div class="toggles">
+      <button class="toggle-btn" id="b-household">配偶者の年金を世帯に合算する</button>
+    </div>
+    <div id="household-input" style="display:none; margin-top: 12px;">
+      <div class="num-field" style="max-width: 360px;">
+        <label>配偶者ご自身の年金（年額）<button class="preset-btn" onclick="presetSpousePension()">基礎年金満額</button></label>
+        <input type="number" id="i-spousePensionAnnual" min="0" max="400" step="5" value="80"> 万円
+      </div>
+      <div class="note" style="margin-top: 8px;">※ 配偶者ご自身の老齢年金（原則65歳から）。加給年金とは別枠です。配偶者の正確な見込額は、このツールに配偶者の加入記録を入力して別途試算できます。</div>
+    </div>
+  </div>
+
+  <!-- 前提条件 -->
+  <div class="summary-box">
+    <h3>ご入力内容</h3>
+    <table>
+      <tr><td>生年月</td><td id="s-birth"></td></tr>
+      <tr><td>国民年金 加入期間</td><td id="s-national"></td></tr>
+      <tr><td>厚生年金 加入期間</td><td id="s-employees"></td></tr>
+      <tr><td>平均標準報酬月額</td><td id="s-salary"></td></tr>
+      <tr><td>受給開始年齢</td><td id="s-startAge"></td></tr>
+      <tr><td>配偶者加給年金</td><td id="s-spouse"></td></tr>
+    </table>
+  </div>
+
+  <!-- メイン結果カード -->
+  <div class="result-card">
+    <div class="corner">ANNUAL SUMMARY</div>
+    <div class="label" id="r-label"></div>
+    <div class="amount-row">
+      <div>
+        <span class="item-label">月額</span>
+        <div class="monthly-value"><span id="r-monthly"></span><span class="unit-yen">円</span></div>
+      </div>
+      <div>
+        <span class="item-label">年額</span>
+        <div class="annual-value"><span id="r-annual"></span><span class="unit-yen-small">円</span></div>
+      </div>
+    </div>
+    <div class="breakdown">
+      <div class="breakdown-cell">
+        <div class="b-label">老齢基礎年金</div>
+        <div class="b-value"><span id="r-basic"></span><span class="b-unit">円/年</span></div>
+        <div class="b-monthly">月額 <span id="r-basic-m"></span> 円</div>
+      </div>
+      <div class="breakdown-cell">
+        <div class="b-label">老齢厚生年金</div>
+        <div class="b-value"><span id="r-employees"></span><span class="b-unit">円/年</span></div>
+        <div class="b-monthly">月額 <span id="r-employees-m"></span> 円</div>
+      </div>
+      <div class="breakdown-cell">
+        <div class="b-label">加給年金</div>
+        <div class="b-value"><span id="r-spousal"></span><span class="b-unit">円/年</span></div>
+        <div class="b-monthly">月額 <span id="r-spousal-m"></span> 円</div>
+      </div>
+    </div>
+    <div class="adjustment-note" id="r-adjustment"></div>
+  </div>
+
+  <!-- 世帯年金 合算 -->
+  <div class="summary-box" id="household-result" style="display:none; border-left-color:#5a7a4f;">
+    <h3>世帯の年金（ご本人＋配偶者）</h3>
+    <table>
+      <tr><td>ご本人</td><td id="hh-self"></td></tr>
+      <tr><td>配偶者ご自身の年金</td><td id="hh-spouse"></td></tr>
+      <tr><td style="color:#1a2744;font-weight:700">世帯合計</td><td id="hh-total" style="color:#1a2744;font-weight:700"></td></tr>
+    </table>
+    <div class="note" style="margin-top:10px">※ ご本人は選択中の受給開始年齢、配偶者は65歳から満額受給とした場合の世帯合計です。両者が受給を開始した後の金額です。</div>
+  </div>
+
+  <!-- 診断 -->
+  <div class="diag-box" id="diag-box">
+    <h3>受給戦略の診断</h3>
+    <ul id="diag-list"></ul>
+  </div>
+
+  <!-- バーチャート -->
+  <div class="section chart-section">
+    <h3>受給開始年齢別の月額</h3>
+    <div class="chart-note">縦線は現在選択中の開始年齢。65歳基準で繰上げ・繰下げによる月額変化を表示。</div>
+    <svg id="bar-chart" class="chart-svg" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="legend-row">
+      <span><span class="legend-dot" style="background:#243360"></span>通常年齢</span>
+      <span><span class="legend-dot" style="background:#b8973e"></span>選択中（<span id="lg-startAge"></span>歳）</span>
+    </div>
+  </div>
+
+  <!-- ラインチャート -->
+  <div class="section chart-section">
+    <h3>累積受給額の比較（万円）</h3>
+    <div class="chart-note">各受給開始年齢で、何歳まで生きた場合の生涯受取総額がいくらになるかを比較。</div>
+    <svg id="line-chart" class="chart-svg" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="legend-row">
+      <span><span class="legend-dot" style="background:#a85a3a"></span>60歳開始</span>
+      <span><span class="legend-dot" style="background:#1a2744"></span>65歳開始</span>
+      <span><span class="legend-dot" style="background:#b8973e"></span>70歳開始</span>
+      <span><span class="legend-dot" style="background:#5a7a4f"></span>75歳開始</span>
+    </div>
+    <div class="break-even-box" id="break-even-box" style="display:none">
+      <strong>損益分岐年齢:</strong> <span id="be-text"></span>
+    </div>
+  </div>
+
+  <!-- 在職老齢年金 -->
+  <div class="section">
+    <h3 style="font-family: 'Yu Mincho', serif; font-size: 16px; color: #1a2744; margin: 0 0 4px 0; font-weight: 600;">在職老齢年金の試算</h3>
+    <div class="chart-note">年金を受給しながら厚生年金加入で働く場合の支給停止額を試算。<br>令和8年度（2026年度）の支給停止調整額は<strong>月額65万円</strong>（令和7年改正で大幅引き上げ）。</div>
+    <div class="slider-row no-print"><div class="label-row"><label>受給中の月収（賞与含む月額換算）</label><span class="value" id="d-workingIncome"></span></div><input type="range" id="i-workingIncome" min="0" max="100" value="0"></div>
+    <div class="working-result none" id="work-result"></div>
+  </div>
+
+  <!-- 出典 -->
+  <div class="section">
+    <div class="source-box">
+      <h4>本試算が用いる公的データ・出典</h4>
+      <dl>
+        <dt>年金額・乗率</dt>
+        <dd>厚生労働省「年金額改定」（令和8年度／2026年度）。老齢基礎年金 満額・報酬比例の乗率（5.481/1000）・配偶者加給年金額に基づきます。</dd>
+        <dt>繰上げ・繰下げ</dt>
+        <dd>繰上げ減額率 月0.4%（昭和37年4月2日以降生まれ）／繰下げ増額率 月0.7%（最大75歳・84%増）。</dd>
+        <dt>在職老齢年金</dt>
+        <dd>支給停止調整額 月額65万円（令和7年改正で引き上げ）。老齢基礎年金は対象外（全額支給）。</dd>
+        <dt>正確な見込額</dt>
+        <dd>「ねんきんネット」または年金事務所でご確認ください。本試算は再評価率・物価スライド等を簡略化した概算です。</dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section no-print">
+    <h2 id="cta-headline"></h2>
+    <p id="cta-lead"></p>
+    <div class="cta-buttons">
+      <button class="btn btn-primary" onclick="handleContact()">個別相談する →</button>
+      <button class="btn btn-outline" onclick="window.print()">📄 結果をPDF保存／印刷</button>
+    </div>
+  </div>
+
+  <div class="print-only print-footer">
+    <h4>ご相談・お問い合わせ</h4>
+    <div>
+      <div><strong id="pf-name"></strong>　<span id="pf-subtitle"></span></div>
+      <div id="pf-address"></div>
+      <div>TEL: <span id="pf-tel"></span>　／　Email: <span id="pf-email"></span></div>
+      <div>Web: <span id="pf-website"></span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>※ 本試算は令和8年度の年金額・乗率に基づく概算であり、再評価率、過去の標準報酬の物価スライド、加入期間ごとの厳密な計算は簡略化しています。</p>
+    <p>※ 正確な見込額は「ねんきんネット」または年金事務所でご確認ください。</p>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  ◆◆◆ 設定セクション（事務所情報） ◆◆◆
+// ============================================================
+const FIRM_INFO = {
+  name: "行政書士 吉岡康生事務所",
+  subtitle: "行政書士 ／ CFP®認定者 ／ 1級FP技能士",
+  tel: "072-741-6693",
+  email: "yasuo@yoshioka-gyosei.jp",
+  address: "〒666-0133 兵庫県川西市鴬台2-1-82",
+  website: "https://yoshioka-gyosei.jp",
+  contactUrl: "https://yoshioka-gyosei.jp/#contact",
+  consultationHeadline: "この結果について、より詳しくご相談いただけます",
+  consultationLead: "初回相談は60分・無料です。シミュレーション結果を踏まえ、ご家族構成・資産・お考えに合わせた個別のライフプラン設計をいたします。",
+};
+// ============================================================
+//  ◆◆◆ 年金額設定（毎年1月の改定後にここを更新） ◆◆◆
+//  現在: 令和8年度（2026年度）
+// ============================================================
+const PENSION = {
+  basicFullNew: 847300,     // 老齢基礎年金 満額（新規裁定者）
+  basicFullOld: 844900,     // 老齢基礎年金 満額（既裁定者）
+  earningsCoef: 5.481 / 1000,
+  spousalAdd: 408100,
+  workThreshold: 650000,    // 在職老齢年金 支給停止調整額（月額）
+};
+const ADJUST = { earlyNew: 0.004, earlyOld: 0.005, late: 0.007 };
+const CUTOFFS = { oldRecipYear: 1958, oldRecipMonth: 3, earlyOldYear: 1962, earlyOldMonth: 3 };
+// ============================================================
+
+// 状態
+const state = {
+  birthYear: 1965, birthMonth: 6,
+  nationalMonths: 480, employeesMonths: 480, avgSalary: 45.5,
+  startAge: 65, hasSpouse: false, spouseUnder65: true,
+  workingIncome: 0,
+  householdMode: false, spousePensionAnnual: 80, // 配偶者ご自身の年金（万円/年）
+};
+
+const fmt = (v) => Math.round(v).toLocaleString();
+
+// スライダー項目の単位（数字入力欄の右に表示）
+const STEP_UNIT = {
+  nationalMonths: 'ヶ月', employeesMonths: 'ヶ月',
+  avgSalary: '万円', startAge: '歳', workingIncome: '万円',
+};
+
+// 各スライダーの隣に「− 数字入力 ＋ 注釈」を生成し、双方向連動
+function buildSteppers() {
+  Object.keys(STEP_UNIT).forEach((key) => {
+    const slider = document.getElementById('i-' + key);
+    const disp = document.getElementById('d-' + key);
+    if (!slider || !disp) return;
+    const step = parseFloat(slider.step) || 1;
+    const min = parseFloat(slider.min);
+    const max = parseFloat(slider.max);
+    const dec = step < 1 ? 1 : 0;
+    disp.innerHTML =
+      `<span class="stepper">` +
+        `<button type="button" aria-label="${key} を減らす">−</button>` +
+        `<input type="number" id="n-${key}" min="${min}" max="${max}" step="${step}" inputmode="decimal">` +
+        `<span class="su">${STEP_UNIT[key]}</span>` +
+        `<button type="button" aria-label="${key} を増やす">＋</button>` +
+      `</span><span class="su2" id="a-${key}"></span>`;
+    const numEl = document.getElementById('n-' + key);
+    const buttons = disp.querySelectorAll('.stepper button');
+    const commit = (raw) => {
+      let v = parseFloat(raw);
+      if (isNaN(v)) v = state[key];
+      v = Math.min(max, Math.max(min, v));
+      v = Math.round(v / step) * step;
+      v = parseFloat(v.toFixed(dec));
+      state[key] = v;
+      slider.value = v;
+      numEl.value = v.toFixed(dec);
+      render();
+    };
+    buttons[0].addEventListener('click', () => commit((parseFloat(numEl.value) || state[key]) - step));
+    buttons[1].addEventListener('click', () => commit((parseFloat(numEl.value) || state[key]) + step));
+    numEl.addEventListener('change', () => commit(numEl.value));
+    numEl.value = Number(state[key]).toFixed(dec);
+  });
+}
+
+// 既裁定者判定
+function isOldRecipient() {
+  return state.birthYear < CUTOFFS.oldRecipYear ||
+    (state.birthYear === CUTOFFS.oldRecipYear && state.birthMonth <= CUTOFFS.oldRecipMonth);
+}
+// 繰上げ率
+function earlyRate() {
+  if (state.birthYear < CUTOFFS.earlyOldYear ||
+     (state.birthYear === CUTOFFS.earlyOldYear && state.birthMonth <= CUTOFFS.earlyOldMonth)) {
+    return ADJUST.earlyOld;
+  }
+  return ADJUST.earlyNew;
+}
+
+// 計算
+function computeResult() {
+  const basicFull = isOldRecipient() ? PENSION.basicFullOld : PENSION.basicFullNew;
+  const basicAt65 = (basicFull * Math.min(state.nationalMonths, 480)) / 480;
+  const earningsAt65 = state.avgSalary * 10000 * PENSION.earningsCoef * state.employeesMonths;
+  const spousalAt65 = state.hasSpouse && state.spouseUnder65 ? PENSION.spousalAdd : 0;
+
+  const months = (state.startAge - 65) * 12;
+  let rate = 1;
+  if (months < 0) rate = 1 + months * earlyRate();
+  else if (months > 0) rate = 1 + months * ADJUST.late;
+
+  const basic = basicAt65 * rate;
+  const earnings = earningsAt65 * rate;
+  const spousal = state.startAge >= 65 ? spousalAt65 : 0;
+  const totalAnnual = basic + earnings + spousal;
+  const totalMonthly = totalAnnual / 12;
+
+  const emplMonthly = earningsAt65 / 12;
+  const workYen = state.workingIncome * 10000;
+  const suspend = (emplMonthly + workYen) > PENSION.workThreshold
+    ? ((emplMonthly + workYen) - PENSION.workThreshold) / 2 : 0;
+  const actualEmpl = Math.max(0, emplMonthly - suspend);
+
+  return {
+    basic, earnings, spousal, totalAnnual, totalMonthly,
+    basicAt65, earningsAt65, spousalAt65,
+    rate, suspend, actualEmpl, emplMonthly,
+  };
+}
+
+// 受給開始年齢別データ
+function ageChartData(r) {
+  const data = [];
+  for (let age = 60; age <= 75; age++) {
+    const m = (age - 65) * 12;
+    let rt = 1;
+    if (m < 0) rt = 1 + m * earlyRate();
+    else if (m > 0) rt = 1 + m * ADJUST.late;
+    const annual = (r.basicAt65 + r.earningsAt65) * rt + (age >= 65 ? r.spousalAt65 : 0);
+    data.push({ age, monthly: Math.round(annual / 12), selected: age === state.startAge });
+  }
+  return data;
+}
+
+// 累積データ
+function cumulativeData(r) {
+  function calc(startAge, untilAge) {
+    const m = (startAge - 65) * 12;
+    let rt = 1;
+    if (m < 0) rt = 1 + m * earlyRate();
+    else if (m > 0) rt = 1 + m * ADJUST.late;
+    const a = (r.basicAt65 + r.earningsAt65) * rt + (startAge >= 65 ? r.spousalAt65 : 0);
+    return a * Math.max(0, untilAge - startAge);
+  }
+  return [75, 80, 85, 90, 95].map((u) => ({
+    until: u,
+    cum60: Math.round(calc(60, u) / 10000),
+    cum65: Math.round(calc(65, u) / 10000),
+    cum70: Math.round(calc(70, u) / 10000),
+    cum75: Math.round(calc(75, u) / 10000),
+  }));
+}
+
+// 損益分岐
+function breakEven(r) {
+  if (state.startAge === 65) return null;
+  const at65M = (r.basicAt65 + r.earningsAt65 + r.spousalAt65) / 12;
+  const diff = r.totalMonthly - at65M;
+  if (diff === 0) return null;
+  if (state.startAge < 65) {
+    const earlyTotal = at65M * (65 - state.startAge) * 12;
+    return state.startAge + Math.abs(earlyTotal / diff) / 12;
+  } else {
+    const missed = at65M * (state.startAge - 65) * 12;
+    return state.startAge + (missed / diff) / 12;
+  }
+}
+
+// バーチャート描画
+function drawBarChart(data) {
+  const svg = document.getElementById('bar-chart');
+  const W = 800, H = 320;
+  const PAD = { top: 30, right: 30, bottom: 40, left: 70 };
+  const cw = W - PAD.left - PAD.right;
+  const ch = H - PAD.top - PAD.bottom;
+
+  const yMax = Math.max(...data.map((d) => d.monthly));
+  const yMaxNice = Math.ceil(yMax / 50000) * 50000;
+  const yScale = (v) => PAD.top + (1 - v / yMaxNice) * ch;
+
+  const barW = cw / data.length * 0.7;
+  const gap = cw / data.length * 0.3;
+
+  let html = '';
+  // Y軸グリッド
+  for (let i = 0; i <= 5; i++) {
+    const v = yMaxNice * i / 5;
+    const y = yScale(v);
+    html += `<line x1="${PAD.left}" y1="${y}" x2="${W - PAD.right}" y2="${y}" stroke="#e0d8cc" stroke-dasharray="2 4"/>`;
+    html += `<text x="${PAD.left - 8}" y="${y + 3}" text-anchor="end" font-size="10" fill="#5a5a5a">${Math.round(v / 10000)}万</text>`;
+  }
+  // 65歳基準ライン
+  const i65 = data.findIndex((d) => d.age === 65);
+  if (i65 >= 0) {
+    const x = PAD.left + (i65 + 0.5) * (cw / data.length);
+    html += `<line x1="${x}" y1="${PAD.top}" x2="${x}" y2="${H - PAD.bottom}" stroke="#b8973e" stroke-dasharray="4 4" stroke-width="1"/>`;
+    html += `<text x="${x}" y="${PAD.top - 6}" text-anchor="middle" font-size="10" fill="#b8973e" font-weight="600">65歳基準</text>`;
+  }
+  // バー
+  data.forEach((d, i) => {
+    const x = PAD.left + i * (cw / data.length) + gap / 2;
+    const y = yScale(d.monthly);
+    const h = (H - PAD.bottom) - y;
+    const color = d.selected ? '#b8973e' : '#243360';
+    html += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="2"/>`;
+    // X軸ラベル
+    html += `<text x="${x + barW / 2}" y="${H - PAD.bottom + 16}" text-anchor="middle" font-size="10" fill="#5a5a5a">${d.age}</text>`;
+  });
+  // 軸線
+  html += `<line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
+  html += `<line x1="${PAD.left}" y1="${H - PAD.bottom}" x2="${W - PAD.right}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
+  // X軸タイトル
+  html += `<text x="${PAD.left + cw / 2}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#5a5a5a">受給開始年齢</text>`;
+
+  svg.innerHTML = html;
+}
+
+// ラインチャート描画
+function drawLineChart(data) {
+  const svg = document.getElementById('line-chart');
+  const W = 800, H = 320;
+  const PAD = { top: 30, right: 80, bottom: 40, left: 70 };
+  const cw = W - PAD.left - PAD.right;
+  const ch = H - PAD.top - PAD.bottom;
+
+  const allValues = data.flatMap((d) => [d.cum60, d.cum65, d.cum70, d.cum75]);
+  const yMax = Math.max(...allValues);
+  const yMaxNice = Math.ceil(yMax / 1000) * 1000;
+
+  const xScale = (i) => PAD.left + i * (cw / (data.length - 1));
+  const yScale = (v) => PAD.top + (1 - v / yMaxNice) * ch;
+
+  let html = '';
+  // Y軸グリッド
+  for (let i = 0; i <= 5; i++) {
+    const v = yMaxNice * i / 5;
+    const y = yScale(v);
+    html += `<line x1="${PAD.left}" y1="${y}" x2="${W - PAD.right}" y2="${y}" stroke="#e0d8cc" stroke-dasharray="2 4"/>`;
+    html += `<text x="${PAD.left - 8}" y="${y + 3}" text-anchor="end" font-size="10" fill="#5a5a5a">${Math.round(v).toLocaleString()}万</text>`;
+  }
+  // X軸ラベル
+  data.forEach((d, i) => {
+    const x = xScale(i);
+    html += `<text x="${x}" y="${H - PAD.bottom + 16}" text-anchor="middle" font-size="11" fill="#5a5a5a">${d.until}歳</text>`;
+  });
+  // ライン
+  const lines = [
+    { key: 'cum60', color: '#a85a3a', label: '60歳開始', width: 1.5 },
+    { key: 'cum65', color: '#1a2744', label: '65歳開始', width: 2.5 },
+    { key: 'cum70', color: '#b8973e', label: '70歳開始', width: 1.5 },
+    { key: 'cum75', color: '#5a7a4f', label: '75歳開始', width: 1.5 },
+  ];
+  lines.forEach((l) => {
+    const points = data.map((d, i) => `${xScale(i)},${yScale(d[l.key])}`).join(' ');
+    html += `<polyline points="${points}" fill="none" stroke="${l.color}" stroke-width="${l.width}"/>`;
+    // ドット
+    data.forEach((d, i) => {
+      html += `<circle cx="${xScale(i)}" cy="${yScale(d[l.key])}" r="${l.width === 2.5 ? 4 : 3}" fill="${l.color}"/>`;
+    });
+    // 終端ラベル
+    const last = data[data.length - 1];
+    html += `<text x="${xScale(data.length - 1) + 6}" y="${yScale(last[l.key]) + 3}" font-size="10" fill="${l.color}" font-weight="600">${l.label.substring(0, 2)}</text>`;
+  });
+  // 軸
+  html += `<line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
+  html += `<line x1="${PAD.left}" y1="${H - PAD.bottom}" x2="${W - PAD.right}" y2="${H - PAD.bottom}" stroke="#5a5a5a"/>`;
+  html += `<text x="${PAD.left + cw / 2}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#5a5a5a">何歳まで生きた場合の累積受給額</text>`;
+
+  svg.innerHTML = html;
+}
+
+// 描画
+function render() {
+  const r = computeResult();
+  const old = isOldRecipient();
+  const er = earlyRate();
+
+  // スライダー・数字入力の同期
+  Object.keys(STEP_UNIT).forEach((k) => {
+    const slider = document.getElementById('i-' + k);
+    if (slider && document.activeElement !== slider) slider.value = state[k];
+    const num = document.getElementById('n-' + k);
+    if (num && document.activeElement !== num) {
+      const step = parseFloat(slider ? slider.step : 1) || 1;
+      const dec = step < 1 ? 1 : 0;
+      num.value = Number(state[k]).toFixed(dec);
+    }
+  });
+  // 注釈（年換算・年収換算・繰上げ繰下げ）
+  const aNat = document.getElementById('a-nationalMonths'); if (aNat) aNat.textContent = `（${(state.nationalMonths / 12).toFixed(1)}年）`;
+  const aEmp = document.getElementById('a-employeesMonths'); if (aEmp) aEmp.textContent = `（${(state.employeesMonths / 12).toFixed(1)}年）`;
+  const aSal = document.getElementById('a-avgSalary'); if (aSal) aSal.textContent = `（年収 ${(state.avgSalary * 12).toFixed(0)}万円相当）`;
+  const aAge = document.getElementById('a-startAge'); if (aAge) aAge.textContent = state.startAge === 65 ? '（標準）' : state.startAge < 65 ? '（繰上げ）' : '（繰下げ）';
+
+  // ご加入区分
+  document.getElementById('info-recipient').innerHTML =
+    `ご加入区分: <strong>${old ? '既裁定者（68歳以上）' : '新規裁定者（67歳以下）'}</strong> ／ 繰上げ減額率: <strong>${(er * 100).toFixed(1)}%/月</strong>`;
+
+  // トグルボタン
+  const bs = document.getElementById('b-hasSpouse');
+  const bu = document.getElementById('b-spouseUnder65');
+  bs.textContent = state.hasSpouse ? '✓ 配偶者あり' : '配偶者あり';
+  bs.classList.toggle('active', state.hasSpouse);
+  bu.style.display = state.hasSpouse ? 'inline-block' : 'none';
+  bu.textContent = state.spouseUnder65 ? '✓ 配偶者は65歳未満' : '配偶者は65歳未満';
+  bu.classList.toggle('active', state.spouseUnder65);
+
+  // サマリー
+  document.getElementById('s-birth').textContent = `${state.birthYear}年${state.birthMonth}月（${old ? '既裁定者' : '新規裁定者'}）`;
+  document.getElementById('s-national').textContent = `${state.nationalMonths}ヶ月（${(state.nationalMonths / 12).toFixed(1)}年）`;
+  document.getElementById('s-employees').textContent = `${state.employeesMonths}ヶ月（${(state.employeesMonths / 12).toFixed(1)}年）`;
+  document.getElementById('s-salary').textContent = `${state.avgSalary}万円（年収換算 ${(state.avgSalary * 12).toFixed(0)}万円）`;
+  document.getElementById('s-startAge').textContent =
+    `${state.startAge}歳${state.startAge === 65 ? '（標準）' : state.startAge < 65 ? `（繰上げ ${((1 - r.rate) * 100).toFixed(1)}%減）` : `（繰下げ ${((r.rate - 1) * 100).toFixed(1)}%増）`}`;
+  document.getElementById('s-spouse').textContent = state.hasSpouse && state.spouseUnder65 ? '対象（配偶者65歳未満）' : '対象外';
+
+  // 結果カード
+  document.getElementById('r-label').textContent = `${state.startAge}歳から受給開始の年金見込額`;
+  document.getElementById('r-monthly').textContent = fmt(r.totalMonthly);
+  document.getElementById('r-annual').textContent = fmt(r.totalAnnual);
+  document.getElementById('r-basic').textContent = fmt(r.basic);
+  document.getElementById('r-basic-m').textContent = fmt(r.basic / 12);
+  document.getElementById('r-employees').textContent = fmt(r.earnings);
+  document.getElementById('r-employees-m').textContent = fmt(r.earnings / 12);
+  document.getElementById('r-spousal').textContent = fmt(r.spousal);
+  document.getElementById('r-spousal-m').textContent = fmt(r.spousal / 12);
+
+  const adj = document.getElementById('r-adjustment');
+  if (state.startAge === 65) {
+    adj.innerHTML = '65歳受給開始（標準）として算出しています。';
+  } else if (state.startAge < 65) {
+    adj.innerHTML = `繰上げ受給により <strong style="color:#ff9a8a">${((1 - r.rate) * 100).toFixed(1)}% 減額</strong>。一度繰上げると変更不可、障害基礎年金等にも影響します。`;
+  } else {
+    adj.innerHTML = `繰下げ受給により <strong style="color:#d4b06a">${((r.rate - 1) * 100).toFixed(1)}% 増額</strong>。加給年金は繰下げ中は支給されません。`;
+  }
+
+  document.getElementById('lg-startAge').textContent = state.startAge;
+
+  // 世帯年金 合算
+  const bh = document.getElementById('b-household');
+  bh.textContent = state.householdMode ? '✓ 配偶者の年金を世帯に合算する' : '配偶者の年金を世帯に合算する';
+  bh.classList.toggle('active', state.householdMode);
+  document.getElementById('household-input').style.display = state.householdMode ? 'block' : 'none';
+  const hhBox = document.getElementById('household-result');
+  if (state.householdMode) {
+    hhBox.style.display = 'block';
+    const selfAnnual = r.totalAnnual;
+    const spouseAnnual = state.spousePensionAnnual * 10000;
+    const totalAnnual = selfAnnual + spouseAnnual;
+    document.getElementById('hh-self').textContent = `月額 ${fmt(selfAnnual / 12)}円 ／ 年額 ${fmt(selfAnnual)}円`;
+    document.getElementById('hh-spouse').textContent = `月額 ${fmt(spouseAnnual / 12)}円 ／ 年額 ${fmt(spouseAnnual)}円`;
+    document.getElementById('hh-total').textContent = `月額 ${fmt(totalAnnual / 12)}円 ／ 年額 ${fmt(totalAnnual)}円`;
+  } else {
+    hhBox.style.display = 'none';
+  }
+
+  // 受給戦略の診断
+  renderPensionDiagnosis(r);
+
+  // チャート
+  drawBarChart(ageChartData(r));
+  drawLineChart(cumulativeData(r));
+
+  // 損益分岐
+  const be = breakEven(r);
+  const beBox = document.getElementById('break-even-box');
+  if (be && be < 95) {
+    beBox.style.display = 'block';
+    document.getElementById('be-text').innerHTML =
+      `${state.startAge}歳受給開始は、65歳受給開始と比較して 約 <span class="break-even-age">${be.toFixed(1)}歳</span> で総受給額が逆転します。`;
+  } else {
+    beBox.style.display = 'none';
+  }
+
+  // 在職老齢年金
+  const wr = document.getElementById('work-result');
+  if (state.workingIncome === 0) {
+    wr.className = 'working-result none';
+    wr.innerHTML = '<span style="font-size:13px;color:#5a5a5a">働かない場合、厚生年金は満額支給されます。</span>';
+  } else if (r.suspend > 0) {
+    wr.className = 'working-result suspended';
+    wr.innerHTML = `<div style="font-size:13px;line-height:1.8">
+      月収 ${state.workingIncome}万円 ＋ 厚生年金月額 ${fmt(r.emplMonthly)}円 = <strong>${fmt(r.emplMonthly + state.workingIncome * 10000)}円</strong><br>
+      支給停止額: <strong style="color:#a85a3a">月額 ${fmt(r.suspend)} 円</strong>
+      → 厚生年金実支給額: <strong style="color:#1a2744;font-size:15px">月額 ${fmt(r.actualEmpl)} 円</strong>
+      <div style="font-size:11px;color:#5a5a5a;margin-top:6px">※ 老齢基礎年金は在職老齢年金の対象外（全額支給）です。</div>
+    </div>`;
+  } else {
+    wr.className = 'working-result ok';
+    wr.innerHTML = '<span style="font-size:13px;color:#5a7a4f">✓ 月収＋厚生年金月額が65万円以下のため、年金は全額支給されます。</span>';
+  }
+}
+
+// 受給戦略の診断
+function renderPensionDiagnosis(r) {
+  const box = document.getElementById('diag-box');
+  const ul = document.getElementById('diag-list');
+  const be = breakEven(r);
+  const lines = [];
+  box.classList.toggle('alert', state.startAge < 65);
+
+  // 受給開始年齢の判断
+  if (state.startAge === 65) {
+    lines.push(['🗓️', '標準の65歳受給です。繰下げると1ヶ月あたり0.7%（最大75歳で+84%）増え、繰上げると0.4%/月減ります。長生きするほど繰下げが有利になります。']);
+  } else if (state.startAge < 65) {
+    const dec = ((1 - r.rate) * 100).toFixed(1);
+    lines.push(['⚠', `繰上げ受給で <strong>${dec}%減額</strong>の前提です。一度繰上げると取消できず、障害基礎年金が受けられない等の影響もあります。${be && be < 95 ? `65歳受給と比べ約 <strong>${be.toFixed(1)}歳</strong> で総額が逆転します。` : ''}`]);
+  } else {
+    const inc = ((r.rate - 1) * 100).toFixed(1);
+    lines.push(['📈', `繰下げ受給で <strong>+${inc}%増額</strong>の前提です。${be && be < 95 ? `65歳受給と比べ約 <strong>${be.toFixed(1)}歳</strong> で総額が逆転し、それより長生きするほど有利です。` : ''}なお繰下げ待機中は加給年金は支給されません。`]);
+  }
+
+  // 在職老齢年金
+  if (state.workingIncome > 0 && r.suspend > 0) {
+    lines.push(['🏢', `働きながら受給すると、月収＋厚生年金月額が65万円を超えるため <strong>月${fmt(r.suspend)}円が支給停止</strong>になります。就労収入を調整すると全額受給に近づけられます（老齢基礎年金は対象外）。`]);
+  }
+
+  // 国民年金 満額未満
+  if (state.nationalMonths < 480) {
+    lines.push(['🧩', `国民年金の加入が${state.nationalMonths}ヶ月で、満額（480ヶ月）に届いていません。基礎年金が減額されています。<strong>任意加入や追納</strong>で増やせる場合があります。`]);
+  }
+
+  // 世帯
+  if (state.householdMode) {
+    const total = r.totalAnnual + state.spousePensionAnnual * 10000;
+    lines.push(['👫', `世帯の年金は合計 <strong>月${fmt(total / 12)}円</strong>（ご本人＋配偶者）。老後の生活費と照らして過不足をご確認ください。`]);
+  }
+
+  // 一般
+  lines.push(['🛟', '本試算は令和8年度の年金額に基づく概算です。正確な見込額は「ねんきんネット」または年金事務所でご確認ください。']);
+
+  ul.innerHTML = lines.map(([ic, t]) => `<li><span class="ic">${ic}</span><span>${t}</span></li>`).join('');
+}
+
+// 配偶者の年金 プリセット
+function presetSpousePension() {
+  state.spousePensionAnnual = 80; // 基礎年金 満額相当
+  document.getElementById('i-spousePensionAnnual').value = state.spousePensionAnnual;
+  render();
+}
+
+// 連絡先
+function handleContact() {
+  if (FIRM_INFO.contactUrl.startsWith('#')) {
+    const t = document.querySelector(FIRM_INFO.contactUrl);
+    if (t) t.scrollIntoView({ behavior: 'smooth' });
+    else window.location.hash = FIRM_INFO.contactUrl;
+  } else {
+    window.location.href = FIRM_INFO.contactUrl;
+  }
+}
+
+// 初期化
+function init() {
+  document.getElementById('print-firm-name').textContent = FIRM_INFO.name;
+  document.getElementById('print-firm-subtitle').textContent = FIRM_INFO.subtitle;
+  document.getElementById('cta-headline').textContent = FIRM_INFO.consultationHeadline;
+  document.getElementById('cta-lead').textContent = FIRM_INFO.consultationLead;
+  document.getElementById('pf-name').textContent = FIRM_INFO.name;
+  document.getElementById('pf-subtitle').textContent = FIRM_INFO.subtitle;
+  document.getElementById('pf-address').textContent = FIRM_INFO.address;
+  document.getElementById('pf-tel').textContent = FIRM_INFO.tel;
+  document.getElementById('pf-email').textContent = FIRM_INFO.email;
+  document.getElementById('pf-website').textContent = FIRM_INFO.website;
+  const today = new Date();
+  document.getElementById('print-date').textContent = `作成日: ${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+
+  // 数値入力
+  document.getElementById('i-birthYear').addEventListener('input', (e) => { state.birthYear = Number(e.target.value); render(); });
+  document.getElementById('i-birthMonth').addEventListener('input', (e) => { state.birthMonth = Number(e.target.value); render(); });
+
+  // 数字入力＋増減ボタンを生成
+  buildSteppers();
+
+  // スライダー
+  ['nationalMonths', 'employeesMonths', 'avgSalary', 'startAge', 'workingIncome'].forEach((k) => {
+    document.getElementById('i-' + k).addEventListener('input', (e) => { state[k] = Number(e.target.value); render(); });
+  });
+
+  // トグル
+  document.getElementById('b-hasSpouse').addEventListener('click', () => { state.hasSpouse = !state.hasSpouse; render(); });
+  document.getElementById('b-spouseUnder65').addEventListener('click', () => { state.spouseUnder65 = !state.spouseUnder65; render(); });
+  document.getElementById('b-household').addEventListener('click', () => { state.householdMode = !state.householdMode; render(); });
+
+  // 配偶者の年金額
+  document.getElementById('i-spousePensionAnnual').addEventListener('input', (e) => { state.spousePensionAnnual = Number(e.target.value); render(); });
+
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
