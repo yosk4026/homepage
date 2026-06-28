@@ -56,6 +56,12 @@
   .source-box h4 { font-family: 'Yu Mincho', serif; font-size: 13px; color: #1a2744; margin: 0 0 8px 0; }
   .source-box dt { font-weight: 700; color: #1a2744; margin-top: 6px; }
   .source-box dd { margin: 0; }
+  .diag-box { background: linear-gradient(135deg, #ffffff 0%, #f6f2e8 100%); border: 1px solid #e0d8cc; border-left: 4px solid #5a7a4f; padding: 20px 24px; margin-bottom: 20px; }
+  .diag-box.alert { border-left-color: #a85a3a; }
+  .diag-box h3 { font-family: 'Yu Mincho', serif; font-size: 15px; color: #1a2744; margin: 0 0 10px 0; }
+  .diag-box ul { margin: 0; padding-left: 4px; list-style: none; }
+  .diag-box li { font-size: 13px; line-height: 1.9; color: #2c2c2c; display: flex; gap: 8px; }
+  .diag-box li .ic { flex-shrink: 0; }
 
   .toggles { display: flex; gap: 12px; }
   .toggle-btn { padding: 8px 16px; background: #fff; color: #1a2744; border: 1px solid #e0d8cc; font-size: 12px; cursor: pointer; font-family: inherit; }
@@ -269,6 +275,12 @@
       <tr><td style="color:#1a2744;font-weight:700">世帯合計</td><td id="hh-total" style="color:#1a2744;font-weight:700"></td></tr>
     </table>
     <div class="note" style="margin-top:10px">※ ご本人は選択中の受給開始年齢、配偶者は65歳から満額受給とした場合の世帯合計です。両者が受給を開始した後の金額です。</div>
+  </div>
+
+  <!-- 診断 -->
+  <div class="diag-box" id="diag-box">
+    <h3>受給戦略の診断</h3>
+    <ul id="diag-list"></ul>
   </div>
 
   <!-- バーチャート -->
@@ -714,6 +726,9 @@ function render() {
     hhBox.style.display = 'none';
   }
 
+  // 受給戦略の診断
+  renderPensionDiagnosis(r);
+
   // チャート
   drawBarChart(ageChartData(r));
   drawLineChart(cumulativeData(r));
@@ -746,6 +761,47 @@ function render() {
     wr.className = 'working-result ok';
     wr.innerHTML = '<span style="font-size:13px;color:#5a7a4f">✓ 月収＋厚生年金月額が65万円以下のため、年金は全額支給されます。</span>';
   }
+}
+
+// 受給戦略の診断
+function renderPensionDiagnosis(r) {
+  const box = document.getElementById('diag-box');
+  const ul = document.getElementById('diag-list');
+  const be = breakEven(r);
+  const lines = [];
+  box.classList.toggle('alert', state.startAge < 65);
+
+  // 受給開始年齢の判断
+  if (state.startAge === 65) {
+    lines.push(['🗓️', '標準の65歳受給です。繰下げると1ヶ月あたり0.7%（最大75歳で+84%）増え、繰上げると0.4%/月減ります。長生きするほど繰下げが有利になります。']);
+  } else if (state.startAge < 65) {
+    const dec = ((1 - r.rate) * 100).toFixed(1);
+    lines.push(['⚠', `繰上げ受給で <strong>${dec}%減額</strong>の前提です。一度繰上げると取消できず、障害基礎年金が受けられない等の影響もあります。${be && be < 95 ? `65歳受給と比べ約 <strong>${be.toFixed(1)}歳</strong> で総額が逆転します。` : ''}`]);
+  } else {
+    const inc = ((r.rate - 1) * 100).toFixed(1);
+    lines.push(['📈', `繰下げ受給で <strong>+${inc}%増額</strong>の前提です。${be && be < 95 ? `65歳受給と比べ約 <strong>${be.toFixed(1)}歳</strong> で総額が逆転し、それより長生きするほど有利です。` : ''}なお繰下げ待機中は加給年金は支給されません。`]);
+  }
+
+  // 在職老齢年金
+  if (state.workingIncome > 0 && r.suspend > 0) {
+    lines.push(['🏢', `働きながら受給すると、月収＋厚生年金月額が65万円を超えるため <strong>月${fmt(r.suspend)}円が支給停止</strong>になります。就労収入を調整すると全額受給に近づけられます（老齢基礎年金は対象外）。`]);
+  }
+
+  // 国民年金 満額未満
+  if (state.nationalMonths < 480) {
+    lines.push(['🧩', `国民年金の加入が${state.nationalMonths}ヶ月で、満額（480ヶ月）に届いていません。基礎年金が減額されています。<strong>任意加入や追納</strong>で増やせる場合があります。`]);
+  }
+
+  // 世帯
+  if (state.householdMode) {
+    const total = r.totalAnnual + state.spousePensionAnnual * 10000;
+    lines.push(['👫', `世帯の年金は合計 <strong>月${fmt(total / 12)}円</strong>（ご本人＋配偶者）。老後の生活費と照らして過不足をご確認ください。`]);
+  }
+
+  // 一般
+  lines.push(['🛟', '本試算は令和8年度の年金額に基づく概算です。正確な見込額は「ねんきんネット」または年金事務所でご確認ください。']);
+
+  ul.innerHTML = lines.map(([ic, t]) => `<li><span class="ic">${ic}</span><span>${t}</span></li>`).join('');
 }
 
 // 配偶者の年金 プリセット
