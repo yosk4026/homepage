@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>補助金 無料診断 | 行政書士 吉岡康生事務所</title>
+<meta name="description" content="あなたの会社が使える補助金を、その場で無料診断。採択を狙う事業計画書づくり・申請支援は行政書士 吉岡康生事務所がご支援します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1a2744; --navy-light:#243360; --gold:#b8973e; --gold-light:#d4b06a;
+    --cream:#f8f5ef; --white:#fff; --text:#2c2c2c; --text-light:#5a5a5a; --border:#e0d8cc;
+    --green:#1a6b3c; --green-bg:#e7f6ec; --green-bd:#bfe3ca;
+    --red:#a12b2b; --red-bg:#fdecec; --red-bd:#f2c4c4;
+    --warn:#8a5a00; --warn-bg:#fdf1d6; --warn-bd:#f0d9a8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Noto Sans JP',sans-serif; color:var(--text); background:var(--cream); line-height:1.8; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:860px; margin:0 auto; padding:0 20px;}
+  h1,h2,h3{font-family:'Noto Serif JP',serif; color:var(--navy); line-height:1.4;}
+  a{color:var(--gold);}
+
+  /* Hero */
+  header.hero{background:var(--navy); color:var(--white); padding:52px 20px 46px; text-align:center;}
+  header.hero .eyebrow{font-family:'EB Garamond',serif; letter-spacing:.18em; color:var(--gold-light); font-size:14px; text-transform:uppercase;}
+  header.hero h1{color:var(--white); font-size:30px; margin:10px 0 14px;}
+  header.hero p{color:#e8e4db; font-size:15px; max-width:640px; margin:0 auto;}
+  header.hero .office{margin-top:16px; font-size:13px; color:var(--gold-light);}
+
+  section{padding:44px 0;}
+  section h2{font-size:22px; text-align:center; margin-bottom:6px;}
+  section h2 + .lead{text-align:center; color:var(--text-light); font-size:14px; margin-bottom:28px;}
+  .gold-rule{width:54px; height:3px; background:var(--gold); margin:12px auto 24px; border-radius:2px;}
+
+  /* 診断カード */
+  #diagnose{background:var(--white);}
+  .card{background:var(--cream); border:1px solid var(--border); border-radius:14px; padding:26px 24px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-weight:700; font-size:14px; margin-bottom:6px; color:var(--navy);}
+  .field select,.field input{width:100%; padding:11px 13px; font-size:15px; font-family:inherit; border:1.5px solid var(--border); border-radius:9px; background:var(--white); color:var(--text);}
+  .field .hint{font-size:12px; color:var(--text-light); margin-top:4px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .btn{display:inline-block; border:none; cursor:pointer; font-family:'Noto Serif JP',serif; font-weight:700; border-radius:10px; text-decoration:none; text-align:center; transition:.2s;}
+  .btn-primary{background:var(--gold); color:var(--white); font-size:17px; padding:15px 34px; width:100%;}
+  .btn-primary:hover{background:var(--gold-light);}
+  .btn-cta{background:var(--navy); color:var(--white); font-size:17px; padding:16px 40px;}
+  .btn-cta:hover{background:var(--navy-light);}
+
+  /* 診断結果 */
+  #result{display:none; margin-top:24px;}
+  .verdict{border-radius:12px; padding:16px 18px; margin-bottom:16px;}
+  .verdict .v-title{font-weight:700; font-size:17px; margin-bottom:4px;}
+  .verdict .v-reason{font-size:13px; color:var(--text-light);}
+  .v-ok{background:var(--green-bg); border:1px solid var(--green-bd);} .v-ok .v-title{color:var(--green);}
+  .v-ng{background:var(--red-bg); border:1px solid var(--red-bd);} .v-ng .v-title{color:var(--red);}
+  .v-warn{background:var(--warn-bg); border:1px solid var(--warn-bd);} .v-warn .v-title{color:var(--warn);}
+  .examples{margin:8px 0 4px;}
+  .examples .ex-h{font-weight:700; font-size:14px; color:var(--navy); margin-bottom:8px;}
+  .ex-item{background:var(--white); border:1px solid var(--border); border-left:4px solid var(--gold); border-radius:9px; padding:11px 14px; margin-bottom:9px;}
+  .ex-item .ex-name{font-weight:700; color:var(--navy);}
+  .ex-item .ex-meta{font-size:12.5px; color:var(--text-light);}
+  .result-cta{background:var(--navy); color:var(--white); border-radius:12px; padding:22px; text-align:center; margin-top:18px;}
+  .result-cta p{color:#e8e4db; font-size:14px; margin-bottom:14px;}
+  .result-cta .btn-cta{background:var(--gold);} .result-cta .btn-cta:hover{background:var(--gold-light);}
+  .disclaimer{font-size:12px; color:var(--text-light); margin-top:12px; text-align:center;}
+
+  /* 補助金の例 */
+  #examples-sec{background:var(--cream);}
+  .sub-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .sub-card{background:var(--white); border:1px solid var(--border); border-radius:12px; padding:18px;}
+  .sub-card h3{font-size:16px; margin-bottom:4px;}
+  .sub-card .scale{color:var(--gold); font-weight:700; font-size:14px; font-family:'EB Garamond',serif;}
+  .sub-card p{font-size:13px; color:var(--text-light); margin-top:6px;}
+  .jg-link-box{text-align:center; margin-top:22px; font-size:13px; color:var(--text-light);}
+
+  /* サービス・料金 */
+  #service{background:var(--white);}
+  .flow{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:26px;}
+  .flow-step{background:var(--cream); border:1px solid var(--border); border-radius:12px; padding:18px 14px; text-align:center;}
+  .flow-step .num{font-family:'EB Garamond',serif; font-size:26px; color:var(--gold); font-weight:700;}
+  .flow-step h3{font-size:15px; margin:4px 0 6px;}
+  .flow-step p{font-size:12.5px; color:var(--text-light);}
+  .fee-table{width:100%; border-collapse:collapse; font-size:14px; background:var(--cream); border-radius:12px; overflow:hidden;}
+  .fee-table th,.fee-table td{padding:12px 14px; text-align:left; border-bottom:1px solid var(--border);}
+  .fee-table th{background:var(--navy); color:var(--white); font-family:'Noto Serif JP',serif; font-weight:500;}
+  .fee-note{font-size:12px; color:var(--text-light); margin-top:10px;}
+
+  /* 最終CTA */
+  #contact{background:var(--navy); color:var(--white); text-align:center;}
+  #contact h2{color:var(--white);}
+  #contact .lead{color:#e8e4db;}
+  .contact-actions{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:22px 0 8px;}
+  .contact-info{font-size:14px; color:#e8e4db; margin-top:16px;}
+  .contact-info a{color:var(--gold-light);}
+
+  footer{background:#14203a; color:#a9b2c4; font-size:12px; padding:26px 20px; text-align:center;}
+  footer .discl{max-width:720px; margin:0 auto 10px;}
+
+  @media(max-width:640px){
+    .grid2,.sub-grid,.flow{grid-template-columns:1fr;}
+    header.hero h1{font-size:24px;} section h2{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow">Subsidy Free Check</div>
+  <h1>補助金 無料診断</h1>
+  <p>あなたの会社が使える補助金を、その場で無料診断。<br>
+     採択を狙う<b style="color:#fff;">事業計画書づくり・申請サポート</b>は、行政書士がご支援します。</p>
+  <div class="office">行政書士 吉岡康生事務所（兵庫県川西市）</div>
+</header>
+
+<!-- ① 無料セルフ診断 -->
+<section id="diagnose">
+  <div class="wrap">
+    <h2>まずは無料で「対象かどうか」を診断</h2>
+    <div class="gold-rule"></div>
+    <div class="card">
+      <div class="field">
+        <label>業種</label>
+        <select id="industry">
+          <option value="">選択してください</option>
+          <option value="manufacturing">製造業・建設業・運輸業 その他</option>
+          <option value="wholesale">卸売業</option>
+          <option value="retail">小売業・飲食業</option>
+          <option value="service">サービス業（士業・IT・宿泊・介護 など）</option>
+        </select>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>常時使用する従業員数</label>
+          <input type="number" id="employees" min="0" placeholder="例：8">
+          <div class="hint">おおよその人数で構いません（役員・パート除く目安）</div>
+        </div>
+        <div class="field">
+          <label>資本金（万円）</label>
+          <input type="number" id="capital" min="0" placeholder="例：500">
+          <div class="hint">個人事業主は空欄でOK</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>都道府県</label>
+        <input type="text" id="prefecture" placeholder="例：兵庫県" value="兵庫県">
+      </div>
+      <button class="btn btn-primary" onclick="runDiagnose()">この条件で無料診断する</button>
+
+      <div id="result">
+        <div id="verdict"></div>
+        <div id="examples" class="examples"></div>
+        <div class="result-cta">
+          <p><b style="color:#fff;">診断はここまでが無料です。</b><br>
+             あなたに本当に合う補助金の見極めと、<b style="color:#fff;">採択を狙う事業計画書・申請</b>は、当事務所が伴走します。</p>
+          <a class="btn btn-cta" href="#contact">▶ まずは無料相談（30分）を予約する</a>
+          <div class="disclaimer">※ 本診断は中小企業基本法の区分に基づく簡易判定です。個別要件・最新の公募状況は公式情報でご確認ください。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ② よく支援する補助金の例 -->
+<section id="examples-sec">
+  <div class="wrap">
+    <h2>行政書士がよく支援する補助金</h2>
+    <p class="lead">代表的な例です。受付状況・要件・金額は年度・公募回で変わります。あなたに合うものは無料診断・相談で。</p>
+    <div class="sub-grid">
+      <div class="sub-card"><h3>小規模事業者持続化補助金</h3><span class="scale">〜 約200万円</span><p>販路開拓・広告・ホームページ等。商工会議所／商工会の様式4が必要。小さく始める入口に。</p></div>
+      <div class="sub-card"><h3>IT導入補助金</h3><span class="scale">〜 約450万円</span><p>顧客管理・会計などの登録ITツール導入。業務効率化・DXに。</p></div>
+      <div class="sub-card"><h3>ものづくり補助金</h3><span class="scale">〜 数千万円</span><p>設備投資・試作開発・生産性向上。製造業を中心に。認定支援機関の関与が有利。</p></div>
+      <div class="sub-card"><h3>事業再構築補助金</h3><span class="scale">〜 数億円</span><p>新分野展開・業態転換など大きな挑戦に。認定経営革新等支援機関の確認書が必要。</p></div>
+    </div>
+    <div class="jg-link-box">
+      国の補助金一覧（受付中）は、デジタル庁の公式ポータルでも確認できます →
+      <a href="https://www.jgrants-portal.go.jp/" target="_blank" rel="noopener">Jグランツ</a>
+    </div>
+  </div>
+</section>
+
+<!-- ③ サービス・料金 -->
+<section id="service">
+  <div class="wrap">
+    <h2>サービスの流れと料金</h2>
+    <div class="gold-rule"></div>
+    <div class="flow">
+      <div class="flow-step"><div class="num">1</div><h3>無料診断・相談</h3><p>対象かどうかの診断と、狙える補助金・進め方のご案内（無料）。</p></div>
+      <div class="flow-step"><div class="num">2</div><h3>計画書作成・申請</h3><p>採択を狙う事業計画書づくりと申請書類の作成・電子申請を支援。</p></div>
+      <div class="flow-step"><div class="num">3</div><h3>採択後サポート</h3><p>交付手続き・実績報告まで伴走（別途）。</p></div>
+    </div>
+    <table class="fee-table">
+      <tr><th>項目</th><th>料金の考え方</th></tr>
+      <tr><td>無料診断・初回相談（30分）</td><td><b>無料</b></td></tr>
+      <tr><td>事業計画書 作成支援・申請サポート</td><td>成功報酬 <b>採択額の10%</b>（着手金は案件により別途ご相談）</td></tr>
+      <tr><td>採択後サポート（実績報告等）</td><td>別途お見積り</td></tr>
+    </table>
+    <p class="fee-note">
+      ※ 行政書士として事業計画書・申請書類の作成を支援します。<b>採択を保証するものではありません。</b>／
+      ※ 認定経営革新等支援機関の確認書が必要な補助金（事業再構築 等）は、連携する認定支援機関と協力して対応します。／
+      ※ 申請支援の報酬は補助金の対象外です。
+    </p>
+  </div>
+</section>
+
+<!-- ④ 最終CTA -->
+<section id="contact">
+  <div class="wrap">
+    <h2>まずは無料相談から</h2>
+    <p class="lead">「うちは対象？」「どの補助金を狙える？」——まずは気軽にご相談ください。<br>オンライン相談も可能です。</p>
+    <div class="contact-actions">
+      <a class="btn btn-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSfAKnn8DYUFnh8tmZ0yetswQxMJU8CHRkjS6hzGEoDF_lioIA/viewform" target="_blank" rel="noopener">✉ 相談フォームから予約</a>
+      <a class="btn btn-cta" href="tel:0727416693">☎ 072-741-6693</a>
+    </div>
+    <div class="contact-info">
+      行政書士 吉岡康生事務所　〒666-0133 兵庫県川西市鴬台2-1-82<br>
+      メール：<a href="mailto:yasuo@yoshioka-gyosei.jp">yasuo@yoshioka-gyosei.jp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="discl">
+    本ページの診断・補助金情報は、一般的な情報提供を目的とした参考であり、個別の採択・受給を保証するものではありません。
+    補助金の要件・金額・受付期間は年度・公募回ごとに変わります。申請にあたっては必ず各補助金の公式の公募要領をご確認ください。
+  </div>
+  © 行政書士 吉岡康生事務所
+</footer>
+
+<script>
+// 中小企業・小規模事業者の判定（中小企業基本法 第2条・e-Gov条文で確認済みの閾値をJS移植）
+// capitalMan=資本金上限(万円), emp=従業員上限(人), small=小規模企業者の従業員上限(人)
+var SME_TABLE = {
+  manufacturing:{label:'製造業・建設業・運輸業 その他', capitalMan:30000, emp:300, small:20},
+  wholesale:    {label:'卸売業',           capitalMan:10000, emp:100, small:5},
+  service:      {label:'サービス業',       capitalMan:5000,  emp:100, small:5},
+  retail:       {label:'小売業・飲食業',   capitalMan:5000,  emp:50,  small:5}
+};
+
+// 業種区分ごとの、相性のよい補助金例（表示用）
+var EXAMPLES = {
+  common: [
+    {name:'小規模事業者持続化補助金', meta:'〜約200万円／販路開拓・広告・HP（様式4が必要）'},
+    {name:'IT導入補助金', meta:'〜約450万円／登録ITツールで業務効率化・DX'}
+  ],
+  manufacturing:[{name:'ものづくり補助金', meta:'〜数千万円／設備投資・試作・生産性向上'},
+                 {name:'事業再構築補助金', meta:'〜数億円／新分野展開・業態転換'}],
+  wholesale:    [{name:'事業再構築補助金', meta:'〜数億円／新分野展開・業態転換'}],
+  retail:       [{name:'事業再構築補助金', meta:'〜数億円／新分野展開・業態転換'}],
+  service:      [{name:'ものづくり補助金', meta:'〜数千万円／サービスの生産性向上・革新的サービス'}]
+};
+
+function num(id){ var v=document.getElementById(id).value; if(v==='') return null; var n=parseInt(v,10); return isNaN(n)?null:n; }
+
+function runDiagnose(){
+  var cat=document.getElementById('industry').value;
+  if(!cat){ alert('業種を選択してください。'); return; }
+  var emp=num('employees');
+  var cap=num('capital');
+  var t=SME_TABLE[cat];
+
+  // 中小＝資本金 or 従業員 のいずれか該当（第2条1項）
+  var capOk = (cap!==null && cap<=t.capitalMan);
+  var empOk = (emp!==null && emp<=t.emp);
+  var capOver = (cap!==null && cap>t.capitalMan);
+  var empOver = (emp!==null && emp>t.emp);
+  var isSme; // true/false/null(要確認)
+  if(capOk||empOk) isSme=true;
+  else if(capOver&&empOver) isSme=false;
+  else isSme=null;
+  var isSmall = (emp!==null) ? (emp<=t.small) : null;
+
+  var parts=[];
+  if(cap!==null) parts.push('資本金 '+cap.toLocaleString()+'万円（上限 '+t.capitalMan.toLocaleString()+'万円）');
+  if(emp!==null) parts.push('従業員 '+emp+'人（上限 '+t.emp+'人）');
+  var reason=t.label+'区分。'+(parts.join(' ／ ')||'資本金・従業員が未入力');
+
+  var vHtml='';
+  if(isSme===true){
+    vHtml='<div class="verdict v-ok"><div class="v-title">✅ 中小企業に該当します'+(isSmall?'（うち小規模企業者にも該当）':'')+'</div><div class="v-reason">'+reason+' ／ 判定根拠：中小企業基本法 第2条</div></div>';
+  } else if(isSme===false){
+    vHtml='<div class="verdict v-ng"><div class="v-title">🚫 中小企業の範囲を超える可能性があります</div><div class="v-reason">'+reason+' ／ 多くの補助金は中小企業が対象です。個別に対象となる制度もあるためご相談ください。</div></div>';
+  } else {
+    vHtml='<div class="verdict v-warn"><div class="v-title">❓ もう少し情報があれば判定できます</div><div class="v-reason">'+reason+' ／ 従業員数・資本金のいずれかをご入力ください。無料相談でも判定できます。</div></div>';
+  }
+
+  // 補助金の例（中小該当または要確認のときに表示）
+  var exHtml='';
+  if(isSme!==false){
+    var list=EXAMPLES.common.concat(EXAMPLES[cat]||[]);
+    exHtml='<div class="ex-h">あなたが狙える可能性のある補助金の例</div>';
+    for(var i=0;i<list.length;i++){
+      exHtml+='<div class="ex-item"><div class="ex-name">'+list[i].name+'</div><div class="ex-meta">'+list[i].meta+'</div></div>';
+    }
+    exHtml+='<div class="ex-meta" style="margin-top:6px;color:var(--text-light);font-size:12.5px;">※ 実際にどれが最適かは、事業内容・投資計画によって変わります。精密な見極めは無料相談で。</div>';
+  }
+
+  document.getElementById('verdict').innerHTML=vHtml;
+  document.getElementById('examples').innerHTML=exHtml;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+</body>
+</html>
