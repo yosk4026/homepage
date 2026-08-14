@@ -826,6 +826,70 @@
     line-height: 1.7;
   }
 
+  /* === note（発信）=== */
+  .profile-note {
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+  .profile-note-label {
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .profile-note-body {
+    font-size: 13.5px;
+    color: var(--text-light);
+    line-height: 2.0;
+    margin-bottom: 18px;
+  }
+  .note-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 24px;
+    font-size: 13px;
+    color: var(--navy);
+    background: var(--white);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: all 0.25s;
+    letter-spacing: 0.04em;
+  }
+  .note-link:hover {
+    background: var(--navy);
+    color: var(--gold-light);
+    border-color: var(--navy);
+  }
+  .note-link .note-mark {
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    transition: color 0.25s;
+  }
+  .note-link:hover .note-mark { color: var(--gold-light); }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .footer-links a {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.25s;
+  }
+  .footer-links a:hover { color: var(--gold-light); }
+  @media (max-width: 768px) {
+    .footer-links { flex-direction: column; align-items: center; gap: 12px; }
+  }
+
 </style>
 </head>
 <body>
@@ -1113,6 +1177,18 @@
             <span class="career-desc">行政書士登録・吉岡康生事務所 開設</span>
           </div>
         </div>
+
+        <div class="profile-note">
+          <div class="profile-note-label">Writing</div>
+          <p class="profile-note-body">
+            在留資格や相続の制度が、いま実際にどう変わろうとしているのか。<br>
+            官庁が公表した原文と条文にあたって確かめたことを、note に書いています。
+          </p>
+          <a class="note-link" href="https://note.com/yoshioka_gyosei" target="_blank" rel="noopener noreferrer">
+            <span class="note-mark">note</span>
+            <span>吉岡康生（行政書士）の記事を読む</span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -1309,7 +1385,10 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-name">行政書士　吉岡康生事務所<span style="font-size:11px; color:rgba(255,255,255,0.4); margin-left:16px; letter-spacing:0.08em;">兵庫県行政書士会　阪神支部所属</span></div>
-  <div class="footer-copy">© 2025 Yoshioka Yasuo Administrative Scrivener Office. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="https://note.com/yoshioka_gyosei" target="_blank" rel="noopener noreferrer">note</a>
+    <div class="footer-copy">© 2025 Yoshioka Yasuo Administrative Scrivener Office. All rights reserved.</div>
+  </div>
 </footer>
 
 <script>
